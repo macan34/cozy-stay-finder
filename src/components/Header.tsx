@@ -1,13 +1,15 @@
 import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Home, Menu, X, ChevronDown, Search, ShoppingCart, User, LogIn } from 'lucide-react';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const location = useLocation();
 
   const navItems = [
-    { label: 'Home', href: '#', hasDropdown: true },
-    { label: 'Explore Homestay!', href: '#explore' },
+    { label: 'Home', href: '/', hasDropdown: true },
+    { label: 'Explore Homestay!', href: '/explore' },
     { label: 'Artikel', href: '#artikel', hasDropdown: true },
   ];
 
@@ -17,7 +19,7 @@ const Header = () => {
       <div className="bg-header">
         <div className="container flex items-center justify-between py-3">
           {/* Logo */}
-          <a href="#" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2">
             <div className="flex items-center justify-center w-10 h-10 rounded-full bg-success">
               <Home className="w-5 h-5 text-success-foreground" />
             </div>
@@ -25,7 +27,7 @@ const Header = () => {
               <span className="text-xl font-bold">WHOUSE</span>
               <span className="block text-[10px] tracking-wider opacity-80">HOMESTAY MANAGEMENT</span>
             </div>
-          </a>
+          </Link>
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-4">
@@ -56,9 +58,9 @@ const Header = () => {
           <div className="hidden md:flex items-center justify-between py-2">
             {/* Left Nav */}
             <div className="flex items-center gap-1">
-              <a href="#" className="nav-link flex items-center gap-2">
+              <Link to="/" className="nav-link flex items-center gap-2">
                 <Home className="w-4 h-4" />
-              </a>
+              </Link>
               
               {navItems.map((item) => (
                 <div key={item.label} className="relative">
@@ -72,9 +74,12 @@ const Header = () => {
                       <ChevronDown className="w-4 h-4" />
                     </button>
                   ) : (
-                    <a href={item.href} className="nav-link">
+                    <Link 
+                      to={item.href} 
+                      className={`nav-link ${location.pathname === item.href ? 'text-warning' : ''}`}
+                    >
                       {item.label}
-                    </a>
+                    </Link>
                   )}
                 </div>
               ))}
@@ -99,14 +104,14 @@ const Header = () => {
         <div className="md:hidden bg-nav animate-slide-down">
           <div className="container py-4 space-y-2">
             {navItems.map((item) => (
-              <a
+              <Link
                 key={item.label}
-                href={item.href}
-                className="block nav-link"
+                to={item.href}
+                className={`block nav-link ${location.pathname === item.href ? 'text-warning' : ''}`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
             <hr className="border-white/20" />
             <button className="w-full nav-link text-left flex items-center gap-2">
