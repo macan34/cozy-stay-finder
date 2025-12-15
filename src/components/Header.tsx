@@ -10,7 +10,7 @@ const Header = () => {
   const navItems = [
     { label: 'Home', href: '/', hasDropdown: true },
     { label: 'Explore Homestay!', href: '/explore' },
-    { label: 'Artikel', href: '#artikel', hasDropdown: true },
+    { label: 'Artikel', href: '/artikel', hasDropdown: true },
   ];
 
   return (
