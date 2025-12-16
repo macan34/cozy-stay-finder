@@ -16,12 +16,7 @@ import {
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import {
-  poolHomestays,
-  budgetHomestays,
-  familyHomestays,
-  bestHomestays,
-} from "@/components/HomestaySection";
+import { allHomestays } from '@/components/HomestaySection';
 
 /* ================= UTIL ================= */
 const toSlug = (text: string) =>
@@ -44,12 +39,7 @@ const HomestayDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
 
-  const allHomestays = [
-    ...poolHomestays,
-    ...budgetHomestays,
-    ...familyHomestays,
-    ...bestHomestays,
-  ];
+
 
   const homestay = allHomestays.find(
     (h) => toSlug(h.title) === slug

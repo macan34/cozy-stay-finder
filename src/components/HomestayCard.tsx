@@ -1,4 +1,5 @@
 import { Star, Users, MapPin } from 'lucide-react';
+import { HomestayCategory } from './HomestaySection';
 
 interface HomestayCardProps {
   image: string;
@@ -10,6 +11,7 @@ interface HomestayCardProps {
   capacity?: number;
   isSpecial?: boolean;
   managedBy?: string;
+  categories: HomestayCategory[];
 }
 
 const HomestayCard = ({
@@ -22,6 +24,7 @@ const HomestayCard = ({
   capacity,
   isSpecial,
   managedBy,
+  categories,
 }: HomestayCardProps) => {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('id-ID').format(price);
@@ -43,6 +46,11 @@ const HomestayCard = ({
           {isSpecial && (
             <span className="badge-special">Spesial</span>
           )}
+          {categories.map((cat) => (
+            <span key={cat} className="bg-primary/90 text-primary-foreground text-xs font-medium px-2 py-1 rounded">
+              {cat}
+            </span>
+          ))}
           {capacity && (
             <span className="bg-card/90 text-foreground text-xs font-medium px-2 py-1 rounded flex items-center gap-1">
               <Users className="w-3 h-3" />

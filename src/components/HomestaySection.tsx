@@ -1,12 +1,20 @@
-import { ChevronRight } from 'lucide-react';
-import HomestayCard from './HomestayCard';
+/* =====================================================
+   DATA, TYPE, & HELPER (AMAN UNTUK DI-IMPORT)
+===================================================== */
 
 import homestay1 from '@/assets/homestay-1.jpg';
 import homestay2 from '@/assets/homestay-2.jpg';
 import homestay3 from '@/assets/homestay-3.jpg';
 import homestay4 from '@/assets/homestay-4.jpg';
 
-interface HomestayData {
+export type HomestayCategory =
+  | 'POOL'
+  | 'BUDGET'
+  | 'FOUR_ROOM'
+  | 'GROUP'
+  | 'HONEYMOON';
+
+export interface HomestayData {
   id: number;
   image: string;
   title: string;
@@ -17,7 +25,125 @@ interface HomestayData {
   capacity?: number;
   isSpecial?: boolean;
   managedBy?: string;
+  categories: HomestayCategory[];
 }
+
+export const allHomestays: HomestayData[] = [
+  {
+    id: 1,
+    image: homestay1,
+    title: 'WHouse Natu (Villa Honeymoon)',
+    description: 'Villa honeymoon dengan kolam renang pribadi.',
+    price: 675000,
+    rating: 9.5,
+    categories: ['POOL', 'HONEYMOON'],
+  },
+  {
+    id: 2,
+    image: homestay2,
+    title: 'WHouse Watu (Villa Honeymoon)',
+    description: 'Villa honeymoon privat dengan kolam renang.',
+    price: 675000,
+    rating: 9.4,
+    categories: ['POOL', 'HONEYMOON'],
+  },
+  {
+    id: 3,
+    image: homestay3,
+    title: 'Omah Putih',
+    description: 'Homestay romantis dekat pusat kota.',
+    price: 800000,
+    rating: 9.6,
+    categories: ['HONEYMOON'],
+  },
+  {
+    id: 4,
+    image: homestay4,
+    title: 'WHouse Pramesthi',
+    description: 'Homestay dengan kids pool.',
+    price: 900000,
+    rating: 9.3,
+    categories: ['POOL', 'GROUP', 'BUDGET'],
+  },
+  {
+    id: 5,
+    image: homestay2,
+    title: 'WHouse Freesia 2',
+    description: 'Homestay murah dan nyaman.',
+    price: 475000,
+    categories: ['BUDGET', 'POOL'],
+  },
+  {
+    id: 6,
+    image: homestay4,
+    title: 'WHouse Freesia 1',
+    description: 'Homestay murah untuk keluarga kecil.',
+    price: 475000,
+    categories: ['BUDGET'],
+  },
+  {
+    id: 7,
+    image: homestay3,
+    title: 'Griya Buwono / Jotawang',
+    description: 'Homestay untuk rombongan besar.',
+    price: 700000,
+    capacity: 15,
+    categories: ['GROUP', 'FOUR_ROOM'],
+  },
+  {
+    id: 8,
+    image: homestay1,
+    title: 'Pegagan',
+    description: 'Homestay 4 kamar dengan fasilitas lengkap.',
+    price: 780000,
+    capacity: 16,
+    categories: ['FOUR_ROOM', 'GROUP'],
+  },
+];
+
+export const homestayCategories: {
+  key: HomestayCategory;
+  title: string;
+  subtitle: string;
+}[] = [
+  {
+    key: 'POOL',
+    title: 'Homestay dengan Kolam Renang',
+    subtitle: 'Privasi dan kenyamanan ekstra',
+  },
+  {
+    key: 'BUDGET',
+    title: 'Homestay Murah',
+    subtitle: 'Harga terjangkau, tetap nyaman',
+  },
+  {
+    key: 'FOUR_ROOM',
+    title: 'Homestay 4 Kamar',
+    subtitle: 'Ideal untuk keluarga besar',
+  },
+  {
+    key: 'GROUP',
+    title: 'Homestay untuk Rombongan',
+    subtitle: 'Kapasitas besar dan fasilitas lengkap',
+  },
+  {
+    key: 'HONEYMOON',
+    title: 'Homestay Honeymoon',
+    subtitle: 'Suasana romantis dan privat',
+  },
+];
+
+export const filterByCategory = (
+  category: HomestayCategory
+): HomestayData[] =>
+  allHomestays.filter(h => h.categories.includes(category));
+
+/* =====================================================
+   COMPONENT
+===================================================== */
+
+import { ChevronRight } from 'lucide-react';
+import HomestayCard from './HomestayCard';
 
 interface HomestaySectionProps {
   title: string;
@@ -26,178 +152,32 @@ interface HomestaySectionProps {
   showViewMore?: boolean;
 }
 
-// Sample data for different sections
-export const poolHomestays: HomestayData[] = [
-  {
-    id: 1,
-    image: homestay1,
-    title: 'WHouse Natu (Villa Honeymoon)',
-    description: 'Villa Honeymoon dilengkapi dengan 1 kamar dengan kolam renang pribadi yang tertutup. Tersedia juga breakfast dan berbagai fasilitas menarik lainnya.',
-    price: 675000,
-    rating: 9.5,
-  },
-  {
-    id: 2,
-    image: homestay2,
-    title: 'WHouse Watu (Villa Honeymoon)',
-    description: 'Villa Honeymoon dilengkapi dengan 1 kamar dengan kolam renang pribadi yang tertutup. Tersedia juga breakfast dan berbagai fasilitas menarik.',
-    price: 675000,
-    rating: 9.4,
-  },
-  {
-    id: 3,
-    image: homestay3,
-    title: 'Omah Putih (Honeymoon)',
-    description: 'Homestay ini berlokasi tidak jauh dari Tugu Jogja & St. Tugu Yogyakarta, Anda hanya perlu berkendara beberapa menit untuk sampai.',
-    price: 800000,
-    rating: 9.6,
-  },
-  {
-    id: 4,
-    image: homestay4,
-    title: 'WHouse Pramesthi (Kids Pool)',
-    description: 'Homestay ini berlokasi di Jogja bagian Timur, dekat dengan Gedung Jogja Expo Center. Anda juga dapat menikmati berbagai fasilitas.',
-    price: 900000,
-    rating: 9.3,
-  },
-];
-
-export const budgetHomestays: HomestayData[] = [
-  {
-    id: 5,
-    image: homestay2,
-    title: 'WHouse Freesia 2',
-    description: 'Unit Freesia adalah homestay yang terdiri dari 2 kamar tidur, di dalam 1 cluster kami memiliki 4 unit yang nyaman.',
-    price: 475000,
-  },
-  {
-    id: 6,
-    image: homestay4,
-    title: 'WHouse Freesia 1',
-    description: 'Unit Freesia adalah homestay yang terdiri dari 2 kamar tidur, di dalam 1 cluster kami memiliki 4 unit yang nyaman.',
-    price: 475000,
-  },
-  {
-    id: 7,
-    image: homestay3,
-    title: 'WHouse Freesia 3',
-    description: 'Unit Freesia adalah homestay yang terdiri dari 2 kamar tidur, di dalam 1 cluster kami memiliki 4 unit yang nyaman.',
-    price: 475000,
-  },
-  {
-    id: 8,
-    image: homestay1,
-    title: 'WHouse Freesia 4',
-    description: 'Unit Freesia adalah homestay yang terdiri dari 2 kamar tidur, di dalam 1 cluster kami memiliki 4 unit yang nyaman.',
-    price: 475000,
-  },
-];
-
-export const familyHomestays: HomestayData[] = [
-  {
-    id: 9,
-    image: homestay4,
-    title: 'Griya Buwono / Jotawang',
-    description: 'Homestay untuk keluarga ini dilengkapi dengan berbagai fasilitas yang akan menjamin kenyamanan Anda selama menginap.',
-    price: 700000,
-    capacity: 15,
-  },
-  {
-    id: 10,
-    image: homestay3,
-    title: 'Gembira Loka',
-    description: 'Homestay ini cocok untuk rombongan karena memiliki ruangan yang cukup luas. Suasana homestaynya asri dan nyaman.',
-    price: 750000,
-    capacity: 12,
-  },
-  {
-    id: 11,
-    image: homestay1,
-    title: 'Pegagan',
-    description: 'Homestay asri dengan 4 kamar tidur, dan dilengkapi dengan wifi serta TV prabayar. Berlokasi di Jogja bagian selatan.',
-    price: 780000,
-    capacity: 16,
-  },
-  {
-    id: 12,
-    image: homestay2,
-    title: 'Gembira Loka 2',
-    description: 'Homestay ini berlokasi strategis di tengah Kota Yogyakarta, letaknya tidak jauh dari wisata Gembira Loka Zoo.',
-    price: 780000,
-    capacity: 14,
-  },
-];
-
-export const bestHomestays: HomestayData[] = [
-  {
-    id: 13,
-    image: homestay1,
-    title: 'Homestay WHouse Cuwathu',
-    description: 'Homestay minimalis ini berlokasi tidak jauh dari Situs Sejarah Candi Kalasan. Homestay ini memiliki fasilitas lengkap.',
-    price: 650000,
-    location: 'KABUPATEN SLEMAN',
-    rating: 9.59,
-    capacity: 11,
-    isSpecial: true,
-    managedBy: 'WHouse Indonesia',
-  },
-  {
-    id: 14,
-    image: homestay3,
-    title: 'Homestay Kotagede',
-    description: 'Homestay ini berlokasi dekat dengan kawasan sentra pengrajin perak, salah satu kerajinan yang cukup populer di Jogja.',
-    price: 600000,
-    location: 'KOTA YOGYAKARTA',
-    rating: 9.60,
-    capacity: 12,
-    isSpecial: true,
-    managedBy: 'WHouse Indonesia',
-  },
-  {
-    id: 15,
-    image: homestay2,
-    title: 'Griya Buwono / Jotawang',
-    description: 'Homestay untuk keluarga ini dilengkapi dengan berbagai fasilitas yang akan menjamin kenyamanan Anda selama menginap.',
-    price: 700000,
-    location: 'KOTA YOGYAKARTA',
-    rating: 9.47,
-    capacity: 15,
-    isSpecial: true,
-    managedBy: 'WHouse Indonesia',
-  },
-];
-
-const HomestaySection = ({ title, subtitle, homestays, showViewMore = true }: HomestaySectionProps) => {
+const HomestaySection = ({
+  title,
+  subtitle,
+  homestays,
+  showViewMore = true,
+}: HomestaySectionProps) => {
   return (
-    <section className="py-12 md:py-16" id="explore">
+    <section className="py-12 md:py-16">
       <div className="container">
-        {/* Stars decoration */}
-        <div className="flex justify-center gap-2 mb-4">
-          <span className="text-accent/50 text-sm">✦</span>
-          <span className="text-accent text-lg">★</span>
-          <span className="text-accent/50 text-sm">✦</span>
-        </div>
 
-        {/* Title */}
-        <h2 className="section-title mb-2">{title}</h2>
-        
-        {/* Underline */}
+        <h2 className="section-title text-center mb-2">{title}</h2>
+
         <div className="w-12 h-1 bg-accent mx-auto mb-4" />
-        
+
         {subtitle && (
           <p className="text-center text-muted-foreground mb-8 max-w-xl mx-auto">
             {subtitle}
           </p>
         )}
 
-        {/* Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-          {homestays.map((homestay) => (
-            <HomestayCard key={homestay.id} {...homestay} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {homestays.map(h => (
+            <HomestayCard key={h.id} {...h} />
           ))}
         </div>
 
-        {/* View More Button */}
         {showViewMore && (
           <div className="text-center mt-8">
             <a
