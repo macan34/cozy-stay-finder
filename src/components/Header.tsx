@@ -10,6 +10,7 @@ const Header = () => {
   const artikelDropdownItems = [
     { label: 'Semua Artikel', href: '/artikel' },
     { label: 'Syarat dan Ketentuan Umum', href: '/artikel/tos' },
+    { label: 'Kebijakan Pembatalan', href: '/artikel/kebijakan' },
     { label: 'Kebijakan Privasi', href: '/artikel/privacy' },
     { label: 'FAQ', href: '/artikel/faq' },
   ];
