@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Menu, X, ChevronDown, Search, ShoppingCart, User, LogIn } from 'lucide-react';
+import { Home, Menu, X, ChevronDown, ShoppingCart, User, LogIn } from 'lucide-react';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -122,10 +122,6 @@ const Header = () => {
               <a href="#" className="text-nav-foreground hover:opacity-80">
                 <ShoppingCart className="w-5 h-5" />
               </a>
-              <button className="flex items-center gap-2 text-nav-foreground hover:opacity-80">
-                <span>Cari</span>
-                <Search className="w-4 h-4" />
-              </button>
             </div>
           </div>
         </div>
