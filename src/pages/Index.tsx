@@ -35,6 +35,11 @@ const Index = () => {
             homestays={bestHomestays}
           />
         </div>
+
+        <HomestaySection
+          title="Homestay honeymoon di Jogja"
+          homestays={familyHomestays}
+        />
       </main>
       
       <Footer />
