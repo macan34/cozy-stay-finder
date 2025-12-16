@@ -4,13 +4,20 @@ import { Home, Menu, X, ChevronDown, Search, ShoppingCart, User, LogIn } from 'l
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const location = useLocation();
 
-  const navItems = [
-    { label: 'Home', href: '/', hasDropdown: true },
-    { label: 'Explore Homestay!', href: '/explore' },
-    { label: 'Artikel', href: '/artikel', hasDropdown: true },
+  const artikelDropdownItems = [
+    { label: 'Semua Artikel', href: '/artikel' },
+    { label: 'Syarat dan Ketentuan Umum', href: '/artikel/tos' },
+    { label: 'Kebijakan Privasi', href: '/artikel/privacy' },
+    { label: 'FAQ', href: '/artikel/faq' },
+  ];
+
+  const homeDropdownItems = [
+    { label: 'Beranda', href: '/' },
+    { label: 'Tentang Kami', href: '/about' },
+    { label: 'Kontak', href: '/contact' },
   ];
 
   return (
@@ -62,27 +69,63 @@ const Header = () => {
                 <Home className="w-4 h-4" />
               </Link>
               
-              {navItems.map((item) => (
-                <div key={item.label} className="relative">
-                  {item.hasDropdown ? (
-                    <button
-                      className="nav-link flex items-center gap-1"
-                      onMouseEnter={() => setIsDropdownOpen(true)}
-                      onMouseLeave={() => setIsDropdownOpen(false)}
-                    >
-                      {item.label}
-                      <ChevronDown className="w-4 h-4" />
-                    </button>
-                  ) : (
-                    <Link 
-                      to={item.href} 
-                      className={`nav-link ${location.pathname === item.href ? 'text-warning' : ''}`}
-                    >
-                      {item.label}
-                    </Link>
-                  )}
-                </div>
-              ))}
+              {/* Home Dropdown */}
+              <div 
+                className="relative"
+                onMouseEnter={() => setActiveDropdown('home')}
+                onMouseLeave={() => setActiveDropdown(null)}
+              >
+                <button className={`nav-link flex items-center gap-1 ${location.pathname === '/' ? 'text-warning' : ''}`}>
+                  Home
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+                {activeDropdown === 'home' && (
+                  <div className="absolute top-full left-0 mt-0 w-48 bg-white rounded-lg shadow-elegant py-2 z-50">
+                    {homeDropdownItems.map((item) => (
+                      <Link
+                        key={item.href}
+                        to={item.href}
+                        className="block px-4 py-2 text-text hover:bg-muted hover:text-primary transition-colors"
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Explore Homestay */}
+              <Link 
+                to="/explore" 
+                className={`nav-link ${location.pathname === '/explore' ? 'text-warning' : ''}`}
+              >
+                Explore Homestay!
+              </Link>
+
+              {/* Artikel Dropdown */}
+              <div 
+                className="relative"
+                onMouseEnter={() => setActiveDropdown('artikel')}
+                onMouseLeave={() => setActiveDropdown(null)}
+              >
+                <button className={`nav-link flex items-center gap-1 ${location.pathname.startsWith('/artikel') ? 'text-warning' : ''}`}>
+                  Artikel
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+                {activeDropdown === 'artikel' && (
+                  <div className="absolute top-full left-0 mt-0 w-56 bg-white rounded-lg shadow-elegant py-2 z-50">
+                    {artikelDropdownItems.map((item) => (
+                      <Link
+                        key={item.href}
+                        to={item.href}
+                        className="block px-4 py-2 text-text hover:bg-muted hover:text-primary transition-colors"
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Right Nav */}
@@ -103,16 +146,36 @@ const Header = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-nav animate-slide-down">
           <div className="container py-4 space-y-2">
-            {navItems.map((item) => (
-              <Link
-                key={item.label}
-                to={item.href}
-                className={`block nav-link ${location.pathname === item.href ? 'text-warning' : ''}`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
+            <Link
+              to="/"
+              className={`block nav-link ${location.pathname === '/' ? 'text-warning' : ''}`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Home
+            </Link>
+            <Link
+              to="/explore"
+              className={`block nav-link ${location.pathname === '/explore' ? 'text-warning' : ''}`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Explore Homestay!
+            </Link>
+            
+            {/* Mobile Artikel Submenu */}
+            <div className="space-y-1">
+              <span className="block nav-link font-semibold">Artikel</span>
+              {artikelDropdownItems.map((item) => (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  className={`block nav-link pl-4 text-sm ${location.pathname === item.href ? 'text-warning' : ''}`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+            
             <hr className="border-white/20" />
             <button className="w-full nav-link text-left flex items-center gap-2">
               <User className="w-5 h-5" />
