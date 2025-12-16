@@ -2,6 +2,7 @@ import { Star, Users, MapPin } from 'lucide-react';
 import { HomestayCategory } from './HomestaySection';
 
 interface HomestayCardProps {
+  id: number;
   image: string;
   title: string;
   description: string;
@@ -30,8 +31,12 @@ const HomestayCard = ({
     return new Intl.NumberFormat('id-ID').format(price);
   };
 
+  const handleClick = () => {
+    window.location.href = `homestaydetail.php?id=${id}`;
+  };
+
   return (
-    <article className="homestay-card group cursor-pointer">
+    <article className="homestay-card group cursor-pointer" onClick={handleClick}>
       {/* Image Container */}
       <div className="relative aspect-[4/3] overflow-hidden">
         <img

@@ -14,7 +14,7 @@ import ArtikelFaq from "./pages/ArtikelFaq";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
-import ExploreDetail from "./pages/HomestayDetail";
+import HomestayDetail from "@/pages/HomestayDetail";
 
 const queryClient = new QueryClient();
 
@@ -27,7 +27,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/explore" element={<Explore />} />
-          <Route path="/explore/:slug" element={<ExploreDetail />} />
+          <Route path="/homestay/:slug" element={<HomestayDetail />} />
           <Route path="/:category" element={<CategoryPage />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />

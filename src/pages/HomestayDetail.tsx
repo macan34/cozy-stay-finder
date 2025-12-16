@@ -16,14 +16,7 @@ import {
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { allHomestays } from '@/components/HomestaySection';
-
-/* ================= UTIL ================= */
-const toSlug = (text: string) =>
-  text
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, "")
-    .replace(/\s+/g, "-");
+import { allHomestays, toSlug } from '@/components/HomestaySection';
 
 /* ================= DATA ================= */
 const facilities = [

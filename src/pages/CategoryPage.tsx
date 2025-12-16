@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import HomestayCard from "@/components/HomestayCard";
-import { allHomestays, homestayCategories, HomestayCategory } from "@/components/HomestaySection";
+import { allHomestays, homestayCategories, HomestayCategory, toSlug } from "@/components/HomestaySection";
 import { useParams, Link } from "react-router-dom";
 
 const CategoryPage = () => {
@@ -63,7 +63,13 @@ const CategoryPage = () => {
         {filteredHomestays.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {filteredHomestays.map((homestay) => (
-              <HomestayCard key={homestay.id} {...homestay} />
+              <Link
+                key={homestay.id}
+                to={`/homestay/${toSlug(homestay.title)}`}
+                className="block"
+              >
+                <HomestayCard {...homestay} />
+              </Link>
             ))}
           </div>
         ) : (

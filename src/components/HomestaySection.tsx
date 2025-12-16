@@ -6,6 +6,14 @@ import homestay1 from '@/assets/homestay-1.jpg';
 import homestay2 from '@/assets/homestay-2.jpg';
 import homestay3 from '@/assets/homestay-3.jpg';
 import homestay4 from '@/assets/homestay-4.jpg';
+import { Link } from "react-router-dom";
+
+/* ================= UTIL: SLUG GENERATOR ================= */
+export const toSlug = (text: string) =>
+  text
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-");
 
 export type HomestayCategory =
   | 'POOL'
@@ -150,6 +158,7 @@ interface HomestaySectionProps {
   subtitle?: string;
   homestays: HomestayData[];
   showViewMore?: boolean;
+  categoryKey?: HomestayCategory;
 }
 
 const HomestaySection = ({
@@ -157,6 +166,7 @@ const HomestaySection = ({
   subtitle,
   homestays,
   showViewMore = true,
+  categoryKey,
 }: HomestaySectionProps) => {
   return (
     <section className="py-12 md:py-16">
@@ -171,22 +181,27 @@ const HomestaySection = ({
             {subtitle}
           </p>
         )}
-
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {homestays.map(h => (
-            <HomestayCard key={h.id} {...h} />
+          {homestays.map((h) => (
+            <Link
+              key={h.id}
+              to={`/homestay/${toSlug(h.title)}`}
+              className="block"
+            >
+              <HomestayCard {...h} />
+            </Link>
           ))}
         </div>
 
-        {showViewMore && (
+        {showViewMore && categoryKey && (
           <div className="text-center mt-8">
-            <a
-              href="/explore"
+            <Link
+              to={`/${categoryKey.toLowerCase()}`}
               className="inline-flex items-center gap-2 text-primary hover:text-primary-hover font-medium transition-colors"
             >
               Lihat Lainnya
               <ChevronRight className="w-4 h-4" />
-            </a>
+            </Link>
           </div>
         )}
       </div>

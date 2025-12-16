@@ -16,15 +16,16 @@ const Index = () => {
       <main>
         <Hero />
 
-{homestayCategories.map((cat, i) => (
-  <div key={cat.key} className={i % 2 ? 'bg-muted' : ''}>
-    <HomestaySection
-      title={cat.title}
-      subtitle={cat.subtitle}
-      homestays={filterByCategory(cat.key)}
-    />
-  </div>
-))}
+        {homestayCategories.map((cat, i) => (
+          <div key={cat.key} className={i % 2 ? 'bg-muted' : ''}>
+            <HomestaySection
+              title={cat.title}
+              subtitle={cat.subtitle}
+              homestays={filterByCategory(cat.key)}
+              categoryKey={cat.key}
+            />
+          </div>
+        ))}
       </main>
 
       <Footer />
