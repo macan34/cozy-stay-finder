@@ -3,6 +3,8 @@ import { MapPin, Calendar, Eye } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import HomestayModal from '@/components/HomestayModal';
+import HomestayCard from '@/components/HomestayCard';
+import { poolHomestays } from '@/components/HomestaySection';
 import homestay1 from '@/assets/homestay-1.jpg';
 import homestay2 from '@/assets/homestay-2.jpg';
 import homestay3 from '@/assets/homestay-3.jpg';
@@ -92,8 +94,58 @@ const trendingHomestays = [
   },
 ];
 
+// All villas data
+const allVillas = [
+  ...poolHomestays,
+  {
+    id: 5,
+    image: homestay1,
+    title: 'Villa Eudora',
+    description: 'Villa mewah di Jogja dengan fasilitas lengkap dan pemandangan indah.',
+    price: 850000,
+    rating: 9.7,
+    capacity: 8,
+  },
+  {
+    id: 6,
+    image: homestay2,
+    title: 'Villa Kadita',
+    description: 'Villa modern dengan desain minimalis dan kolam renang pribadi.',
+    price: 750000,
+    rating: 9.5,
+    capacity: 6,
+  },
+  {
+    id: 7,
+    image: homestay3,
+    title: 'Villa Aurora',
+    description: 'Villa dengan taman luas dan fasilitas BBQ untuk keluarga.',
+    price: 900000,
+    rating: 9.6,
+    capacity: 10,
+  },
+  {
+    id: 8,
+    image: homestay4,
+    title: 'Villa Amiena',
+    description: 'Villa tradisional Jogja dengan sentuhan modern dan suasana tenang.',
+    price: 700000,
+    rating: 9.4,
+    capacity: 7,
+  },
+  {
+    id: 9,
+    image: homestay1,
+    title: 'Villa Jogja Gamelan',
+    description: 'Villa dengan nuansa budaya Jogja dan musik gamelan sebagai tema.',
+    price: 800000,
+    rating: 9.3,
+    capacity: 9,
+  },
+];
+
 const Explore = () => {
-  const [selectedHomestay, setSelectedHomestay] = useState<ExploreCategory | null>(null);
+  const [selectedVilla, setSelectedVilla] = useState<any | null>(null);
 
   return (
     <div className="min-h-screen bg-background">
@@ -103,7 +155,7 @@ const Explore = () => {
       <div className="bg-gradient-to-r from-primary to-primary-dark py-12 md:py-16">
         <div className="container text-center">
           <h1 className="text-2xl md:text-4xl font-bold text-white mb-2">
-            Explore berbagai homestay terbaik di Jogja!!!
+            Explore berbagai villa terbaik di Jogja!!!
           </h1>
           <div className="w-16 h-1 bg-warning mx-auto mt-4" />
         </div>
@@ -124,118 +176,45 @@ const Explore = () => {
 
       {/* Main Content */}
       <div className="container py-8 md:py-12">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Categories Grid */}
-          <div className="lg:col-span-2">
-            <div className="grid md:grid-cols-2 gap-6">
-              {exploreCategories.map((category) => (
-                <article 
-                  key={category.id}
-                  className="bg-card rounded-lg overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 group cursor-pointer"
-                  onClick={() => setSelectedHomestay(category)}
-                >
-                  {/* Image */}
-                  <div className="relative aspect-[4/3] overflow-hidden">
-                    <img
-                      src={category.image}
-                      alt={category.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </div>
+        {/* Stars decoration */}
+        <div className="flex justify-center gap-2 mb-4">
+          <span className="text-accent/50 text-sm">✦</span>
+          <span className="text-accent text-lg">★</span>
+          <span className="text-accent/50 text-sm">✦</span>
+        </div>
 
-                  {/* Content */}
-                  <div className="p-4">
-                    <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors flex items-start gap-2">
-                      {category.title}
-                      <MapPin className="w-4 h-4 text-primary flex-shrink-0 mt-1" />
-                    </h3>
-                    <p className="text-muted-foreground text-sm mt-2 line-clamp-3">
-                      {category.description}
-                    </p>
+        {/* Title */}
+        <h2 className="section-title mb-2">Villa Terbaik di Jogja</h2>
 
-                    {/* Author */}
-                    <div className="flex items-center gap-2 mt-4 pt-4 border-t border-border">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                        <span className="text-xs font-bold text-primary">W</span>
-                      </div>
-                      <span className="text-sm text-muted-foreground">by WHouse Indonesia</span>
-                    </div>
+        {/* Underline */}
+        <div className="w-12 h-1 bg-accent mx-auto mb-4" />
 
-                    {/* Meta */}
-                    <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        {category.date}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Eye className="w-3 h-3" />
-                        {category.views.toLocaleString()}x dilihat
-                      </span>
-                    </div>
-                  </div>
-                </article>
-              ))}
+        {/* Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+          {allVillas.map((villa) => (
+            <div key={villa.id} onClick={() => setSelectedVilla(villa)} className="cursor-pointer">
+              <HomestayCard {...villa} />
             </div>
-          </div>
-
-          {/* Sidebar - Trending */}
-          <aside className="lg:col-span-1">
-            <div className="bg-card rounded-lg shadow-card p-4 sticky top-24">
-              <div className="flex items-center justify-between mb-4 pb-3 border-b border-border">
-                <h2 className="text-lg font-semibold text-foreground">Trending Homestay!!!</h2>
-                <span className="text-primary">▼</span>
-              </div>
-
-              <div className="space-y-4">
-                {trendingHomestays.map((item) => (
-                  <div key={item.id} className="flex gap-3">
-                    <div className="relative w-20 h-16 flex-shrink-0 rounded overflow-hidden">
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        className="w-full h-full object-cover"
-                      />
-                      <button className="absolute inset-x-0 bottom-0 bg-primary text-white text-xs py-1 hover:bg-primary-dark transition-colors">
-                        Lihat
-                      </button>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-medium text-primary hover:underline cursor-pointer line-clamp-1">
-                        {item.title}
-                      </h4>
-                      <p className="text-xs text-muted-foreground mt-1 line-clamp-3">
-                        {item.description}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                        <Eye className="w-3 h-3" />
-                        {item.views.toLocaleString()}x dilihat
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </aside>
+          ))}
         </div>
       </div>
 
       <Footer />
 
       {/* Modal */}
-      {selectedHomestay && (
+      {selectedVilla && (
         <HomestayModal
           homestay={{
-            title: selectedHomestay.title,
-            description: selectedHomestay.description,
-            price: 350000,
+            title: selectedVilla.title,
+            description: selectedVilla.description,
+            price: selectedVilla.price,
             location: 'Yogyakarta',
-            rating: 4.8,
-            capacity: 6,
-            image: selectedHomestay.image,
+            rating: selectedVilla.rating || 4.8,
+            capacity: selectedVilla.capacity || 6,
+            image: selectedVilla.image,
           }}
-          isOpen={!!selectedHomestay}
-          onClose={() => setSelectedHomestay(null)}
+          isOpen={!!selectedVilla}
+          onClose={() => setSelectedVilla(null)}
         />
       )}
     </div>
