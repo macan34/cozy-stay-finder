@@ -147,13 +147,22 @@ const Header = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-nav animate-slide-down">
           <div className="container py-4 space-y-2">
-            <Link
-              to="/"
-              className={`block nav-link ${location.pathname === '/' ? 'text-warning' : ''}`}
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Home
-            </Link>
+            {/* Mobile Home Submenu */}
+            <div className="space-y-1">
+              <span className="block nav-link font-semibold">Home</span>
+              {homeDropdownItems.map((item) => (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  className={`block nav-link pl-4 text-sm ${location.pathname === item.href ? 'text-warning' : ''}`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+            
+            {/* Explore Link */}
             <Link
               to="/explore"
               className={`block nav-link ${location.pathname === '/explore' ? 'text-warning' : ''}`}
