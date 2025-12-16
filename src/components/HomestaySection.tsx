@@ -201,7 +201,7 @@ const HomestaySection = ({ title, subtitle, homestays, showViewMore = true }: Ho
         {showViewMore && (
           <div className="text-center mt-8">
             <a
-              href="#"
+              href="/explore"
               className="inline-flex items-center gap-2 text-primary hover:text-primary-hover font-medium transition-colors"
             >
               Lihat Lainnya
