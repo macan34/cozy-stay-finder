@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Menu, X, ChevronDown, ShoppingCart, Search, LogIn, Trash2 } from 'lucide-react';
+import { useCart } from '@/contexts/CartContext';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -8,7 +9,7 @@ const Header = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [cartItems, setCartItems] = useState([]);
+  const { cartItems, removeFromCart, getTotalPrice, getTotalItems } = useCart();
   const location = useLocation();
 
   const artikelDropdownItems = [
@@ -31,18 +32,6 @@ const Header = () => {
     alert(`Mencari: ${searchQuery}`);
     setIsSearchOpen(false);
     setSearchQuery('');
-  };
-
-  const removeFromCart = (id: number) => {
-    setCartItems(cartItems.filter(item => item.id !== id));
-  };
-
-  const getTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-  };
-
-  const getTotalItems = () => {
-    return cartItems.reduce((total, item) => total + item.quantity, 0);
   };
 
   return (

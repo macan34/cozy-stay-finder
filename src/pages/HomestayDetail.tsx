@@ -17,6 +17,7 @@ import {
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { allHomestays, toSlug } from '@/components/HomestaySection';
+import { useCart } from '@/contexts/CartContext';
 
 /* ================= DATA ================= */
 const facilities = [
@@ -32,7 +33,7 @@ const HomestayDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
 
-
+const { addToCart } = useCart();
 
   const homestay = allHomestays.find(
     (h) => toSlug(h.title) === slug
@@ -151,7 +152,15 @@ const HomestayDetail = () => {
             <div className="text-2xl font-bold text-primary mb-4">
               Rp {formatPrice(homestay.price)} / malam
             </div>
-            <button className="w-full btn-primary">
+            <button
+              className="w-full btn-primary"
+              onClick={() => addToCart({
+                id: homestay.id,
+                name: homestay.title,
+                price: homestay.price,
+                image: homestay.image,
+              })}
+            >
               Pesan Sekarang
             </button>
           </aside>

@@ -1,10 +1,22 @@
-import { Home, MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
+import {
+  Home,
+  MapPin,
+  Phone,
+  Mail,
+  Clock,
+  Facebook,
+  Instagram,
+  Twitter,
+  Youtube,
+} from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
     <footer className="bg-header text-header-foreground">
       <div className="container py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+
           {/* Company Info */}
           <div>
             <div className="flex items-center gap-2 mb-4">
@@ -13,25 +25,22 @@ const Footer = () => {
               </div>
               <div>
                 <span className="text-xl font-bold">WHOUSE</span>
-                <span className="block text-[10px] tracking-wider opacity-80">HOMESTAY MANAGEMENT</span>
+                <span className="block text-[10px] tracking-wider opacity-80">
+                  HOMESTAY MANAGEMENT
+                </span>
               </div>
             </div>
+
             <p className="text-sm opacity-80 mb-4">
-              Platform booking homestay terpercaya di Yogyakarta dengan lebih dari 200 properti yang siap dipesan.
+              Platform booking homestay terpercaya di Yogyakarta dengan lebih dari
+              200 properti yang siap dipesan.
             </p>
+
             <div className="flex gap-3">
-              <a href="#" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors" aria-label="Facebook">
-                <Facebook className="w-4 h-4" />
-              </a>
-              <a href="#" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors" aria-label="Instagram">
-                <Instagram className="w-4 h-4" />
-              </a>
-              <a href="#" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors" aria-label="Twitter">
-                <Twitter className="w-4 h-4" />
-              </a>
-              <a href="#" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors" aria-label="Youtube">
-                <Youtube className="w-4 h-4" />
-              </a>
+              <a aria-label="Facebook" className="social-btn"><Facebook className="w-4 h-4" /></a>
+              <a aria-label="Instagram" className="social-btn"><Instagram className="w-4 h-4" /></a>
+              <a aria-label="Twitter" className="social-btn"><Twitter className="w-4 h-4" /></a>
+              <a aria-label="Youtube" className="social-btn"><Youtube className="w-4 h-4" /></a>
             </div>
           </div>
 
@@ -39,21 +48,11 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold text-lg mb-4">Halaman</h3>
             <ul className="space-y-2">
-              <li>
-                <a href="#" className="text-sm opacity-80 hover:opacity-100 transition-opacity">Beranda</a>
-              </li>
-              <li>
-                <a href="#" className="text-sm opacity-80 hover:opacity-100 transition-opacity">Explore Homestay</a>
-              </li>
-              <li>
-                <a href="#" className="text-sm opacity-80 hover:opacity-100 transition-opacity">Artikel</a>
-              </li>
-              <li>
-                <a href="#" className="text-sm opacity-80 hover:opacity-100 transition-opacity">Tentang Kami</a>
-              </li>
-              <li>
-                <a href="#" className="text-sm opacity-80 hover:opacity-100 transition-opacity">Syarat & Ketentuan</a>
-              </li>
+              <li><Link to="/" className="footer-link">Beranda</Link></li>
+              <li><Link to="/explore" className="footer-link">Explore Homestay</Link></li>
+              <li><Link to="/artikel" className="footer-link">Artikel</Link></li>
+              <li><Link to="/tentang" className="footer-link">Tentang Kami</Link></li>
+              <li><Link to="/syarat-ketentuan" className="footer-link">Syarat & Ketentuan</Link></li>
             </ul>
           </div>
 
@@ -61,21 +60,11 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold text-lg mb-4">Kategori Homestay</h3>
             <ul className="space-y-2">
-              <li>
-                <a href="#" className="text-sm opacity-80 hover:opacity-100 transition-opacity">Homestay dengan Kolam Renang</a>
-              </li>
-              <li>
-                <a href="#" className="text-sm opacity-80 hover:opacity-100 transition-opacity">Homestay Murah</a>
-              </li>
-              <li>
-                <a href="#" className="text-sm opacity-80 hover:opacity-100 transition-opacity">Homestay 4 Kamar</a>
-              </li>
-              <li>
-                <a href="#" className="text-sm opacity-80 hover:opacity-100 transition-opacity">Homestay untuk Rombongan</a>
-              </li>
-              <li>
-                <a href="#" className="text-sm opacity-80 hover:opacity-100 transition-opacity">Homestay Honeymoon</a>
-              </li>
+              <li><Link to="/pool" className="footer-link">Homestay dengan Kolam Renang</Link></li>
+              <li><Link to="/murah" className="footer-link">Homestay Murah</Link></li>
+              <li><Link to="/4-kamar" className="footer-link">Homestay 4 Kamar</Link></li>
+              <li><Link to="/rombongan" className="footer-link">Homestay untuk Rombongan</Link></li>
+              <li><Link to="/honeymoon" className="footer-link">Homestay Honeymoon</Link></li>
             </ul>
           </div>
 
@@ -83,24 +72,33 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold text-lg mb-4">Kontak Kami</h3>
             <ul className="space-y-3">
-              <li className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 mt-1 flex-shrink-0 opacity-80" />
-                <span className="text-sm opacity-80">Jl. Kaliurang KM 5.5, Caturtunggal, Depok, Sleman, Yogyakarta 55281</span>
+              <li className="flex gap-3">
+                <MapPin className="w-4 h-4 mt-1 opacity-80" />
+                <span className="text-sm opacity-80">
+                  Jl. Kaliurang KM 5.5, Sleman, Yogyakarta
+                </span>
               </li>
-              <li className="flex items-center gap-3">
-                <Phone className="w-4 h-4 flex-shrink-0 opacity-80" />
-                <a href="tel:+6281234567890" className="text-sm opacity-80 hover:opacity-100 transition-opacity">+62 812 3456 7890</a>
+              <li className="flex gap-3">
+                <Phone className="w-4 h-4 opacity-80" />
+                <a href="tel:+6281234567890" className="footer-link">
+                  +62 812 3456 7890
+                </a>
               </li>
-              <li className="flex items-center gap-3">
-                <Mail className="w-4 h-4 flex-shrink-0 opacity-80" />
-                <a href="mailto:info@homestayjogja.co.id" className="text-sm opacity-80 hover:opacity-100 transition-opacity">info@homestayjogja.co.id</a>
+              <li className="flex gap-3">
+                <Mail className="w-4 h-4 opacity-80" />
+                <a href="mailto:info@homestayjogja.co.id" className="footer-link">
+                  info@homestayjogja.co.id
+                </a>
               </li>
-              <li className="flex items-center gap-3">
-                <Clock className="w-4 h-4 flex-shrink-0 opacity-80" />
-                <span className="text-sm opacity-80">Senin - Minggu: 08:00 - 22:00</span>
+              <li className="flex gap-3">
+                <Clock className="w-4 h-4 opacity-80" />
+                <span className="text-sm opacity-80">
+                  Senin - Minggu: 08:00 - 22:00
+                </span>
               </li>
             </ul>
           </div>
+
         </div>
       </div>
 

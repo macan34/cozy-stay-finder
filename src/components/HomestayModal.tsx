@@ -1,10 +1,12 @@
 import { X, Star, Users, MapPin, Wifi, Car, Coffee, Tv, Wind, UtensilsCrossed, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
+import { useCart } from '@/contexts/CartContext';
 
 interface HomestayModalProps {
   isOpen: boolean;
   onClose: () => void;
   homestay: {
+    id?: number;
     image: string;
     title: string;
     description: string;
@@ -26,6 +28,7 @@ const facilities = [
 
 const HomestayModal = ({ isOpen, onClose, homestay }: HomestayModalProps) => {
   const [currentImage, setCurrentImage] = useState(0);
+  const { addToCart } = useCart();
 
   if (!isOpen) return null;
 
@@ -113,7 +116,18 @@ const HomestayModal = ({ isOpen, onClose, homestay }: HomestayModalProps) => {
                 </span>
                 <span className="text-muted-foreground"> / malam</span>
               </div>
-              <button className="btn-primary">
+              <button
+                className="btn-primary"
+                onClick={() => {
+                  addToCart({
+                    id: homestay.id || Math.random(),
+                    name: homestay.title,
+                    price: homestay.price,
+                    image: homestay.image,
+                  });
+                  onClose();
+                }}
+              >
                 Pesan Sekarang
               </button>
             </div>
