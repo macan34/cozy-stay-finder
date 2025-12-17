@@ -16,6 +16,7 @@ interface HomestayCardProps {
 }
 
 const HomestayCard = ({
+  id,
   image,
   title,
   description,
