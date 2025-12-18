@@ -2,10 +2,7 @@
    DATA, TYPE, & HELPER (AMAN UNTUK DI-IMPORT)
 ===================================================== */
 
-import homestay1 from '@/assets/homestay-1.jpg';
-import homestay2 from '@/assets/homestay-2.jpg';
-import homestay3 from '@/assets/homestay-3.jpg';
-import homestay4 from '@/assets/homestay-4.jpg';
+import { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 
 /* ================= UTIL: SLUG GENERATOR ================= */
@@ -35,79 +32,6 @@ export interface HomestayData {
   managedBy?: string;
   categories: HomestayCategory[];
 }
-
-export const allHomestays: HomestayData[] = [
-  {
-    id: 1,
-    image: homestay1,
-    title: 'WHouse Natu (Villa Honeymoon)',
-    description: 'Villa honeymoon dengan kolam renang pribadi.',
-    price: 675000,
-    rating: 9.5,
-    categories: ['POOL', 'HONEYMOON'],
-  },
-  {
-    id: 2,
-    image: homestay2,
-    title: 'WHouse Watu (Villa Honeymoon)',
-    description: 'Villa honeymoon privat dengan kolam renang.',
-    price: 675000,
-    rating: 9.4,
-    categories: ['POOL', 'HONEYMOON'],
-  },
-  {
-    id: 3,
-    image: homestay3,
-    title: 'Omah Putih',
-    description: 'Homestay romantis dekat pusat kota.',
-    price: 800000,
-    rating: 9.6,
-    categories: ['HONEYMOON'],
-  },
-  {
-    id: 4,
-    image: homestay4,
-    title: 'WHouse Pramesthi',
-    description: 'Homestay dengan kids pool.',
-    price: 900000,
-    rating: 9.3,
-    categories: ['POOL', 'GROUP', 'BUDGET'],
-  },
-  {
-    id: 5,
-    image: homestay2,
-    title: 'WHouse Freesia 2',
-    description: 'Homestay murah dan nyaman.',
-    price: 475000,
-    categories: ['BUDGET', 'POOL'],
-  },
-  {
-    id: 6,
-    image: homestay4,
-    title: 'WHouse Freesia 1',
-    description: 'Homestay murah untuk keluarga kecil.',
-    price: 475000,
-    categories: ['BUDGET'],
-  },
-  {
-    id: 7,
-    image: homestay3,
-    title: 'Griya Buwono / Jotawang',
-    description: 'Homestay untuk rombongan besar.',
-    price: 700000,
-    capacity: 15,
-    categories: ['GROUP', 'FOUR_ROOM'],
-  },
-  {
-    id: 8,
-    image: homestay1,
-    title: 'Pegagan',
-    description: 'Homestay 4 kamar dengan fasilitas lengkap.',
-    price: 780000,
-    capacity: 16,
-    categories: ['FOUR_ROOM', 'GROUP'],
-  },
-];
 
 export const homestayCategories: {
   key: HomestayCategory;
@@ -147,10 +71,49 @@ export const homestayCategories: {
   },
 ];
 
+// Hook to fetch homestays from API
+export const useHomestays = () => {
+  const [homestays, setHomestays] = useState<HomestayData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchHomestays = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/homestays');
+        if (!response.ok) {
+          throw new Error('Failed to fetch homestays');
+        }
+        const data = await response.json();
+        setHomestays(
+          data.map((h: any) => ({
+            ...h,
+            image:
+              typeof h.image === 'string' && h.image.startsWith('/uploads')
+                ? `http://localhost:5000${h.image}`
+                : h.image,
+            rating: Number.isFinite(Number(h.rating)) ? Number(h.rating) : 0,
+            price: Number.isFinite(Number(h.price)) ? Number(h.price) : h.price,
+          }))
+        );
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHomestays();
+  }, []);
+
+  return { homestays, loading, error };
+};
+
 export const filterByCategory = (
-  category: HomestayCategory
+  category: HomestayCategory,
+  homestays: HomestayData[]
 ): HomestayData[] =>
-  allHomestays.filter(h => h.categories.includes(category));
+  homestays.filter(h => h.categories.includes(category));
 
 /* =====================================================
    COMPONENT

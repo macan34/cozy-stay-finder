@@ -1,13 +1,15 @@
 import { X, Star, Users, MapPin, Wifi, Car, Coffee, Tv, Wind, UtensilsCrossed, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { useCart } from '@/contexts/CartContext';
+import ImageGallery from './ImageGallery';
 
 interface HomestayModalProps {
   isOpen: boolean;
   onClose: () => void;
   homestay: {
     id?: number;
-    image: string;
+    image?: string;
+    images?: string[];
     title: string;
     description: string;
     price: number;
