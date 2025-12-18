@@ -113,31 +113,37 @@ export const homestayCategories: {
   key: HomestayCategory;
   title: string;
   subtitle: string;
+  slug: string;
 }[] = [
   {
     key: 'POOL',
     title: 'Homestay dengan Kolam Renang',
     subtitle: 'Privasi dan kenyamanan ekstra',
+    slug: 'homestay-jogja-private-pool',
   },
   {
     key: 'BUDGET',
     title: 'Homestay Murah',
     subtitle: 'Harga terjangkau, tetap nyaman',
+    slug: 'homestay-jogja-murah',
   },
   {
     key: 'FOUR_ROOM',
     title: 'Homestay 4 Kamar',
     subtitle: 'Ideal untuk keluarga besar',
+    slug: 'homestay-jogja-4-kamar',
   },
   {
     key: 'GROUP',
     title: 'Homestay untuk Rombongan',
     subtitle: 'Kapasitas besar dan fasilitas lengkap',
+    slug: 'homestay-jogja-untuk-rombongan',
   },
   {
     key: 'HONEYMOON',
     title: 'Homestay Honeymoon',
     subtitle: 'Suasana romantis dan privat',
+    slug: 'homestay-jogja-honeymoon',
   },
 ];
 
@@ -159,6 +165,7 @@ interface HomestaySectionProps {
   homestays: HomestayData[];
   showViewMore?: boolean;
   categoryKey?: HomestayCategory;
+  categorySlug?: string;
 }
 
 const HomestaySection = ({
@@ -166,7 +173,7 @@ const HomestaySection = ({
   subtitle,
   homestays,
   showViewMore = true,
-  categoryKey,
+  categorySlug,
 }: HomestaySectionProps) => {
   return (
     <section className="py-12 md:py-16">
@@ -193,10 +200,10 @@ const HomestaySection = ({
           ))}
         </div>
 
-        {showViewMore && categoryKey && (
+        {showViewMore && categorySlug && (
           <div className="text-center mt-8">
             <Link
-              to={`/${categoryKey.toLowerCase()}`}
+              to={`/explore/${categorySlug}`}
               className="inline-flex items-center gap-2 text-primary hover:text-primary-hover font-medium transition-colors"
             >
               Lihat Lainnya
