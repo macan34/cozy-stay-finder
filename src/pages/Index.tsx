@@ -22,7 +22,7 @@ const Index = () => {
               title={cat.title}
               subtitle={cat.subtitle}
               homestays={filterByCategory(cat.key)}
-              categoryKey={cat.key}
+              categorySlug={cat.slug}
             />
           </div>
         ))}
