@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   Star,
@@ -52,6 +52,7 @@ interface HomestayDetailData {
   images: string[];
   facilities: string[];
   rules: string[];
+  coordinates?: { lat: number; lng: number };
 }
 
 /* ================= SAMPLE DATA ================= */
@@ -72,6 +73,7 @@ const homestayDetails: HomestayDetailData[] = [
     images: [homestay1, homestay2, homestay3, homestay4, homestay1, homestay2],
     facilities: ["WiFi Gratis", "AC", "Parkir", "Dapur", "TV", "Kulkas", "Setrika", "Kipas Angin", "Water Heater", "Perlengkapan Masak"],
     rules: ["Check-in: 14:00", "Check-out: 12:00", "Tidak boleh membawa hewan peliharaan", "Dilarang mengadakan pesta/acara", "Dilarang merokok di dalam ruangan"],
+    coordinates: { lat: -7.8012, lng: 110.3956 },
   },
   {
     id: 2,
@@ -89,6 +91,7 @@ const homestayDetails: HomestayDetailData[] = [
     images: [homestay2, homestay3, homestay4, homestay1, homestay2, homestay3],
     facilities: ["Kolam Renang", "WiFi Gratis", "AC", "Parkir", "Dapur", "TV", "Kulkas", "Setrika", "Water Heater", "BBQ Area"],
     rules: ["Check-in: 14:00", "Check-out: 12:00", "Tidak boleh membawa hewan peliharaan", "Dilarang mengadakan pesta/acara besar", "Anak-anak harus diawasi saat berenang"],
+    coordinates: { lat: -7.7826, lng: 110.4168 },
   },
   {
     id: 3,
@@ -106,6 +109,7 @@ const homestayDetails: HomestayDetailData[] = [
     images: [homestay3, homestay4, homestay1, homestay2, homestay3, homestay4],
     facilities: ["WiFi Gratis", "AC", "Parkir Luas", "Dapur", "TV", "Kipas Angin", "Setrika", "Taman", "Ruang Keluarga Luas"],
     rules: ["Check-in: 14:00", "Check-out: 12:00", "Tidak boleh membawa hewan peliharaan", "Jaga kebersihan lingkungan"],
+    coordinates: { lat: -7.7982, lng: 110.3921 },
   },
 ];
 
@@ -126,6 +130,7 @@ const defaultHomestay: HomestayDetailData = {
   images: [homestay1, homestay2, homestay3, homestay4, homestay1, homestay2],
   facilities: ["WiFi Gratis", "AC", "Parkir", "Dapur", "TV", "Kulkas", "Setrika", "Kipas Angin", "Water Heater", "Perlengkapan Masak"],
   rules: ["Check-in: 14:00", "Check-out: 12:00", "Tidak boleh membawa hewan peliharaan", "Dilarang mengadakan pesta/acara", "Dilarang merokok di dalam ruangan"],
+  coordinates: { lat: -7.7956, lng: 110.3695 },
 };
 
 const WHATSAPP_NUMBER = "6285713577240";
@@ -138,9 +143,67 @@ const HomestayDetail = () => {
   const [checkInDate, setCheckInDate] = useState("");
   const [checkOutDate, setCheckOutDate] = useState("");
   const [guestCount, setGuestCount] = useState(1);
+  const [activeTab, setActiveTab] = useState("gallery");
+
+  // Refs for sections
+  const galleryRef = useRef<HTMLDivElement>(null);
+  const detailRef = useRef<HTMLDivElement>(null);
+  const fasilitasRef = useRef<HTMLDivElement>(null);
+  const tentangRef = useRef<HTMLDivElement>(null);
+  const mapsRef = useRef<HTMLDivElement>(null);
 
   // Find homestay by slug or use default
   const homestay = homestayDetails.find((h) => h.slug === slug) || { ...defaultHomestay, title: slug?.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ") || defaultHomestay.title };
+
+  const scrollToSection = (sectionId: string) => {
+    const refs: { [key: string]: React.RefObject<HTMLDivElement> } = {
+      gallery: galleryRef,
+      detail: detailRef,
+      fasilitas: fasilitasRef,
+      tentang: tentangRef,
+      maps: mapsRef,
+    };
+    
+    const ref = refs[sectionId];
+    if (ref?.current) {
+      const offset = 80; // Height of sticky header
+      const elementPosition = ref.current.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+      
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+      setActiveTab(sectionId);
+    }
+  };
+
+  // Track active section on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = [
+        { id: "gallery", ref: galleryRef },
+        { id: "detail", ref: detailRef },
+        { id: "fasilitas", ref: fasilitasRef },
+        { id: "tentang", ref: tentangRef },
+        { id: "maps", ref: mapsRef },
+      ];
+
+      const offset = 100;
+      for (const section of sections.reverse()) {
+        if (section.ref.current) {
+          const rect = section.ref.current.getBoundingClientRect();
+          if (rect.top <= offset) {
+            setActiveTab(section.id);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const formatPrice = (price: number) =>
     new Intl.NumberFormat("id-ID").format(price);
@@ -196,6 +259,8 @@ const HomestayDetail = () => {
     "Kolam Renang": Bath,
   };
 
+  const coords = homestay.coordinates || defaultHomestay.coordinates!;
+
   return (
     <div className="min-h-screen bg-[#f0f4f8]">
       <Header />
@@ -205,23 +270,61 @@ const HomestayDetail = () => {
         <div className="container">
           <div className="flex items-center justify-between">
             <div className="flex">
-              <button className="px-6 py-4 text-sm font-medium text-white bg-blue-600 border-b-2 border-blue-600">
+              <button 
+                onClick={() => scrollToSection("gallery")}
+                className={`px-6 py-4 text-sm font-medium transition-colors ${
+                  activeTab === "gallery" 
+                    ? "text-white bg-blue-600 border-b-2 border-blue-600" 
+                    : "text-gray-600 hover:text-blue-600"
+                }`}
+              >
                 Gallery
               </button>
-              <button className="px-6 py-4 text-sm font-medium text-gray-600 hover:text-blue-600">
+              <button 
+                onClick={() => scrollToSection("detail")}
+                className={`px-6 py-4 text-sm font-medium transition-colors ${
+                  activeTab === "detail" 
+                    ? "text-white bg-blue-600 border-b-2 border-blue-600" 
+                    : "text-gray-600 hover:text-blue-600"
+                }`}
+              >
                 Detail
               </button>
-              <button className="px-6 py-4 text-sm font-medium text-gray-600 hover:text-blue-600">
+              <button 
+                onClick={() => scrollToSection("fasilitas")}
+                className={`px-6 py-4 text-sm font-medium transition-colors ${
+                  activeTab === "fasilitas" 
+                    ? "text-white bg-blue-600 border-b-2 border-blue-600" 
+                    : "text-gray-600 hover:text-blue-600"
+                }`}
+              >
                 Fasilitas
               </button>
-              <button className="px-6 py-4 text-sm font-medium text-gray-600 hover:text-blue-600">
+              <button 
+                onClick={() => scrollToSection("tentang")}
+                className={`px-6 py-4 text-sm font-medium transition-colors ${
+                  activeTab === "tentang" 
+                    ? "text-white bg-blue-600 border-b-2 border-blue-600" 
+                    : "text-gray-600 hover:text-blue-600"
+                }`}
+              >
                 Tentang
               </button>
-              <button className="px-6 py-4 text-sm font-medium text-gray-600 hover:text-blue-600">
-                Reviews
+              <button 
+                onClick={() => scrollToSection("maps")}
+                className={`px-6 py-4 text-sm font-medium transition-colors ${
+                  activeTab === "maps" 
+                    ? "text-white bg-blue-600 border-b-2 border-blue-600" 
+                    : "text-gray-600 hover:text-blue-600"
+                }`}
+              >
+                Maps
               </button>
             </div>
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button 
+              onClick={() => scrollToSection("maps")}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
               <MapPin className="w-4 h-4 mr-2" />
               Lihat di Maps
             </Button>
@@ -234,7 +337,7 @@ const HomestayDetail = () => {
           {/* Main Content */}
           <div className="lg:col-span-2">
             {/* Image Gallery */}
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-6">
+            <div ref={galleryRef} className="bg-white rounded-lg shadow-sm overflow-hidden mb-6">
               <div className="relative aspect-video">
                 <img
                   src={homestay.images[currentImageIndex]}
@@ -276,8 +379,12 @@ const HomestayDetail = () => {
               </div>
             </div>
 
-            {/* Room Info Icons */}
-            <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+            {/* Room Info Icons (Detail) */}
+            <div ref={detailRef} className="bg-white rounded-lg shadow-sm p-6 mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-blue-600">Detail Kamar</h2>
+                <ChevronDown className="w-5 h-5 text-gray-400" />
+              </div>
               <div className="grid grid-cols-4 gap-4 text-center">
                 <div className="flex flex-col items-center">
                   <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mb-2">
@@ -310,19 +417,8 @@ const HomestayDetail = () => {
               </div>
             </div>
 
-            {/* About Section */}
-            <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-blue-600">Tentang {homestay.title}</h2>
-                <ChevronDown className="w-5 h-5 text-gray-400" />
-              </div>
-              <div className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">
-                {homestay.longDescription}
-              </div>
-            </div>
-
             {/* Facilities Section */}
-            <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div ref={fasilitasRef} className="bg-white rounded-lg shadow-sm p-6 mb-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-blue-600">Fasilitas</h2>
                 <ChevronDown className="w-5 h-5 text-gray-400" />
@@ -340,8 +436,19 @@ const HomestayDetail = () => {
               </div>
             </div>
 
+            {/* About Section */}
+            <div ref={tentangRef} className="bg-white rounded-lg shadow-sm p-6 mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-blue-600">Tentang {homestay.title}</h2>
+                <ChevronDown className="w-5 h-5 text-gray-400" />
+              </div>
+              <div className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">
+                {homestay.longDescription}
+              </div>
+            </div>
+
             {/* Rules Section */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-blue-600">Peraturan</h2>
                 <ChevronDown className="w-5 h-5 text-gray-400" />
@@ -354,6 +461,36 @@ const HomestayDetail = () => {
                   </li>
                 ))}
               </ul>
+            </div>
+
+            {/* Maps Section */}
+            <div ref={mapsRef} className="bg-white rounded-lg shadow-sm p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-blue-600">Lokasi</h2>
+                <a 
+                  href={`https://www.google.com/maps?q=${coords.lat},${coords.lng}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-sm text-blue-600 hover:underline"
+                >
+                  Buka di Google Maps
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
+              <div className="flex items-center gap-2 mb-4 text-sm text-gray-600">
+                <MapPin className="w-4 h-4 text-blue-600" />
+                <span>{homestay.address}</span>
+              </div>
+              <div className="rounded-lg overflow-hidden border">
+                <iframe
+                  title="Lokasi Homestay"
+                  width="100%"
+                  height="300"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  src={`https://www.openstreetmap.org/export/embed.html?bbox=${coords.lng - 0.01}%2C${coords.lat - 0.01}%2C${coords.lng + 0.01}%2C${coords.lat + 0.01}&layer=mapnik&marker=${coords.lat}%2C${coords.lng}`}
+                />
+              </div>
             </div>
           </div>
 
