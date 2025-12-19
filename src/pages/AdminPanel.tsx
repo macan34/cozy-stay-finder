@@ -34,16 +34,11 @@ interface DashboardStats {
   totalUsers: number;
 }
 
-interface Category {
-  code: string;
-  name: string;
-}
-
 const AdminPanel = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [homestays, setHomestays] = useState<Homestay[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState([]);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
@@ -55,7 +50,6 @@ const AdminPanel = () => {
     title: '',
     description: '',
     price: '',
-    rating: '',
     capacity: '',
     rooms: '',
     location: '',
@@ -71,6 +65,11 @@ const AdminPanel = () => {
     'Kamar Mandi Dalam', 'Teras', 'BBQ Area', 'Smart TV', 'Laundry',
     'Akses Pantai', 'View Gunung', 'Pemanas Ruangan', 'Guide Tour'
   ];
+
+  const categoryOptions = categories.map(cat => ({
+    key: cat.code,
+    label: cat.name
+  }));
 
   useEffect(() => {
     const user = localStorage.getItem('user');
@@ -93,18 +92,11 @@ const AdminPanel = () => {
       const statsData = await statsRes.json();
       const categoriesData = await categoriesRes.json();
 
-      // Pastikan rating adalah number
-      const processedHomestays = homestaysData.map((homestay: any) => ({
-        ...homestay,
-        rating: typeof homestay.rating === 'string' ? parseFloat(homestay.rating) : Number(homestay.rating) || 0
-      }));
-
-      setHomestays(processedHomestays);
+      setHomestays(homestaysData);
       setStats(statsData);
       setCategories(categoriesData);
     } catch (err) {
       setError('Gagal memuat data dashboard');
-      console.error('Error loading dashboard:', err);
     }
   };
 
@@ -118,7 +110,6 @@ const AdminPanel = () => {
       title: '',
       description: '',
       price: '',
-      rating: '',
       capacity: '',
       rooms: '',
       location: '',
@@ -149,50 +140,16 @@ const AdminPanel = () => {
     }));
   };
 
-const validateForm = () => {
-  const rating = parseFloat(form.rating);
-  if (isNaN(rating) || rating < 0 || rating > 5) {
-    setError('Rating harus antara 0 hingga 5');
-    return false;
-  }
-    
-    const price = parseFloat(form.price);
-    if (isNaN(price) || price <= 0) {
-      setError('Harga harus lebih dari 0');
-      return false;
-    }
-    
-    const capacity = parseInt(form.capacity);
-    if (isNaN(capacity) || capacity <= 0) {
-      setError('Kapasitas harus lebih dari 0');
-      return false;
-    }
-    
-    const rooms = parseInt(form.rooms);
-    if (isNaN(rooms) || rooms <= 0) {
-      setError('Jumlah kamar harus lebih dari 0');
-      return false;
-    }
-    
-    return true;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setSuccess('');
     setError('');
 
-    if (!validateForm()) {
-      setLoading(false);
-      return;
-    }
-
     const data = new FormData();
     data.append('title', form.title);
     data.append('description', form.description);
     data.append('price', form.price);
-    data.append('rating', form.rating);
     data.append('capacity', form.capacity);
     data.append('rooms', form.rooms);
     data.append('location', form.location);
@@ -222,7 +179,6 @@ const validateForm = () => {
       }
     } catch (err) {
       setError('Gagal koneksi server!');
-      console.error('Error submitting form:', err);
     } finally {
       setLoading(false);
     }
@@ -234,7 +190,6 @@ const validateForm = () => {
       title: homestay.title,
       description: homestay.description,
       price: homestay.price.toString(),
-      rating: homestay.rating.toString(),
       capacity: homestay.capacity.toString(),
       rooms: homestay.rooms.toString(),
       location: homestay.location,
@@ -265,14 +220,6 @@ const validateForm = () => {
     } catch (err) {
       setError('Gagal koneksi server!');
     }
-  };
-
-  // Fungsi untuk format rating dengan aman
-  const formatRating = (rating: any) => {
-    if (rating === null || rating === undefined) return '0.0';
-    const num = Number(rating);
-    if (isNaN(num)) return '0.0';
-    return num.toFixed(1);
   };
 
   return (
@@ -333,7 +280,7 @@ const validateForm = () => {
                   <Star className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats?.averageRating || '0.0'}</div>
+                  <div className="text-2xl font-bold">{stats?.averageRating || 0}</div>
                   <p className="text-xs text-muted-foreground">Dari semua properti</p>
                 </CardContent>
               </Card>
@@ -372,7 +319,7 @@ const validateForm = () => {
                       </div>
                       <div className="flex items-center gap-1">
                         <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <span className="text-sm">{formatRating(homestay.rating)}</span>
+                        <span className="text-sm">{homestay.rating}</span>
                       </div>
                     </div>
                   ))}
@@ -439,37 +386,15 @@ const validateForm = () => {
                       />
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="price">Harga per Malam (Rp)</Label>
+                        <Label htmlFor="price">Harga per Malam</Label>
                         <Input
                           id="price"
                           type="number"
                           value={form.price}
                           onChange={(e) => setForm(prev => ({ ...prev, price: e.target.value }))}
                           placeholder="1500000"
-                          min="0"
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="rating">Rating (0-5)</Label>
-                        <Input
-                          id="rating"
-                          type="number"
-                          value={form.rating}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            // Validasi input rating
-                            const numValue = parseFloat(value);
-                            if (value === '' || (!isNaN(numValue) && numValue >= 0 && numValue <= 5)) {
-                              setForm(prev => ({ ...prev, rating: value }));
-                            }
-                          }}
-                          placeholder="4.5"
-                          min="0"
-                          max="5"
-                          step="0.1"
                           required
                         />
                       </div>
@@ -487,14 +412,13 @@ const validateForm = () => {
 
                     <div className="grid grid-cols-3 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="capacity">Kapasitas (orang)</Label>
+                        <Label htmlFor="capacity">Kapasitas</Label>
                         <Input
                           id="capacity"
                           type="number"
                           value={form.capacity}
                           onChange={(e) => setForm(prev => ({ ...prev, capacity: e.target.value }))}
                           placeholder="6"
-                          min="1"
                           required
                         />
                       </div>
@@ -506,7 +430,6 @@ const validateForm = () => {
                           value={form.rooms}
                           onChange={(e) => setForm(prev => ({ ...prev, rooms: e.target.value }))}
                           placeholder="3"
-                          min="1"
                           required
                         />
                       </div>
@@ -529,9 +452,6 @@ const validateForm = () => {
                           onChange={(e) => setForm(prev => ({ ...prev, image: e.target.files?.[0] || null }))}
                           required={!editingHomestay}
                         />
-                        {editingHomestay && (
-                          <p className="text-xs text-gray-500">Kosongkan jika tidak ingin mengubah gambar</p>
-                        )}
                       </div>
                     </div>
 
@@ -542,12 +462,12 @@ const validateForm = () => {
                           <div key={facility} className="flex items-center space-x-2">
                             <input
                               type="checkbox"
-                              id={`facility-${facility}`}
+                              id={facility}
                               checked={form.facilities.includes(facility)}
                               onChange={() => handleFacilityToggle(facility)}
                               className="rounded"
                             />
-                            <Label htmlFor={`facility-${facility}`} className="text-sm">{facility}</Label>
+                            <Label htmlFor={facility} className="text-sm">{facility}</Label>
                           </div>
                         ))}
                       </div>
@@ -556,31 +476,23 @@ const validateForm = () => {
                     <div className="space-y-2">
                       <Label>Kategori</Label>
                       <div className="grid grid-cols-2 gap-2">
-                        {categories.map((category) => (
-                          <div key={category.code} className="flex items-center space-x-2">
+                        {categoryOptions.map((category) => (
+                          <div key={category.key} className="flex items-center space-x-2">
                             <input
                               type="checkbox"
-                              id={`category-${category.code}`}
-                              checked={form.categories.includes(category.code)}
-                              onChange={() => handleCategoryToggle(category.code)}
+                              id={category.key}
+                              checked={form.categories.includes(category.key)}
+                              onChange={() => handleCategoryToggle(category.key)}
                               className="rounded"
                             />
-                            <Label htmlFor={`category-${category.code}`} className="text-sm">{category.name}</Label>
+                            <Label htmlFor={category.key} className="text-sm">{category.label}</Label>
                           </div>
                         ))}
                       </div>
                     </div>
 
-                    {success && (
-                      <Alert className="bg-green-50 border-green-200">
-                        <AlertDescription className="text-green-600">{success}</AlertDescription>
-                      </Alert>
-                    )}
-                    {error && (
-                      <Alert variant="destructive">
-                        <AlertDescription>{error}</AlertDescription>
-                      </Alert>
-                    )}
+                    {success && <Alert><AlertDescription className="text-green-600">{success}</AlertDescription></Alert>}
+                    {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
 
                     <div className="flex justify-end gap-2">
                       <Button type="button" variant="outline" onClick={() => setIsAddDialogOpen(false)}>
@@ -595,12 +507,6 @@ const validateForm = () => {
                 </DialogContent>
               </Dialog>
             </div>
-
-            {success && !isAddDialogOpen && (
-              <Alert className="bg-green-50 border-green-200">
-                <AlertDescription className="text-green-600">{success}</AlertDescription>
-              </Alert>
-            )}
 
             <Card>
               <CardContent className="p-0">
@@ -631,7 +537,7 @@ const validateForm = () => {
                         <TableCell>
                           <div className="flex items-center gap-1">
                             <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                            <span className="font-medium">{formatRating(homestay.rating)}</span>
+                            {homestay.rating}
                           </div>
                         </TableCell>
                         <TableCell>
