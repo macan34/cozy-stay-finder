@@ -46,7 +46,7 @@ const Header = () => {
                 <Home className="w-6 h-6 text-white" />
               </div>
               <div className="text-white">
-                <span className="text-2xl font-bold tracking-tight">WHOUSE</span>
+                <span className="text-2xl font-bold tracking-tight">ADAKAMAR</span>
                 <span className="block text-[9px] tracking-widest opacity-90 uppercase">Homestay Management</span>
               </div>
             </Link>
