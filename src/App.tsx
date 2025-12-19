@@ -1,3 +1,4 @@
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,7 +16,9 @@ import ArtikelFaq from "./pages/ArtikelFaq";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
+const AdminPanel = React.lazy(() => import("@/pages/AdminPanel"));
 import HomestayDetail from "@/pages/HomestayDetail";
+import Login from "./pages/Login";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +41,12 @@ const App = () => (
             <Route path="/artikel/kebijakan" element={<ArtikelKebijakan />} />
             <Route path="/artikel/privacy" element={<ArtikelPrivacy />} />
             <Route path="/artikel/faq" element={<ArtikelFaq />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/admin" element={
+  <React.Suspense fallback={<div>Loading...</div>}>
+    <AdminPanel />
+  </React.Suspense>
+} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

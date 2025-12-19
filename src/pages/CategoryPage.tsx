@@ -1,15 +1,10 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Star, Users, MapPin, Search, Bed } from "lucide-react";
-import { exploreCategories } from "./Explore";
-
-// Import images
-import homestay1 from "@/assets/homestay-1.jpg";
-import homestay2 from "@/assets/homestay-2.jpg";
-import homestay3 from "@/assets/homestay-3.jpg";
-import homestay4 from "@/assets/homestay-4.jpg";
+import { Star, Users, MapPin, Search, Bed, Loader2 } from "lucide-react";
+import { homestayCategories } from "@/components/HomestaySection";
 
 /* ================= INTERFACES ================= */
 interface Homestay {
@@ -26,102 +21,73 @@ interface Homestay {
   facilities: string[];
 }
 
-/* ================= SAMPLE DATA FOR CATEGORY ================= */
-const categoryHomestays: Homestay[] = [
-  {
-    id: 1,
-    image: homestay1,
-    title: "Homestay Gembira Loka 2",
-    description: "Homestay ini berlokasi strategis di tengah Kota Yogyakarta, letaknya tidak jauh dari wisata Gembira Loka Zoo dan UAD Kampus 3. Disekitar homestay terdapat berbagai macam kuliner dan minimarket yang a...",
-    price: 780000,
-    rating: 9.43,
-    capacity: 15,
-    rooms: 4,
-    location: "KABUPATEN BANTUL",
-    distance: "± 0.5KM",
-    facilities: ["Garasi", "AC", "Dapur", "Kipas Angin", "Kulkas"],
-  },
-  {
-    id: 2,
-    image: homestay2,
-    title: "Homestay JEC Kuning",
-    description: "Homestay di Jogja dengan kolam renang plus desain interior estetik??? WHouse JEC Kuning adalah homestay yang tepat apalagi jika Anda mengagendakan staycation di Jogja. Homestay ini juga privat, artin...",
-    price: 850000,
-    rating: 9.53,
-    capacity: 18,
-    rooms: 4,
-    location: "KOTA YOGYAKARTA",
-    distance: "± 0.6KM",
-    facilities: ["Garasi", "AC", "Dapur", "Kolam Renang", "WiFi"],
-  },
-  {
-    id: 3,
-    image: homestay3,
-    title: "Homestay Gembira Loka",
-    description: "Homestay ini cocok untuk rombongan karna memiliki ruangan yang cukup luas. Suasana homestaynya asri dan suasana lingkungannya tenang, cocok untuk Anda yang penat dengan suasana keramaian. Homestay i...",
-    price: 720000,
-    rating: 9.47,
-    capacity: 16,
-    rooms: 4,
-    location: "KOTA YOGYAKARTA",
-    distance: "± 0.9KM",
-    facilities: ["Garasi", "AC", "Dapur", "Kipas Angin", "TV"],
-  },
-  {
-    id: 4,
-    image: homestay4,
-    title: "Homestay Sanggrahan 2",
-    description: "Homestay yang berlokasi di daerah Sanggrahan ini memiliki 4 kamar tidur dengan kapasitas maksimal 12 orang. Fasilitas lengkap dan nyaman untuk keluarga atau rombongan...",
-    price: 650000,
-    rating: 9.35,
-    capacity: 12,
-    rooms: 4,
-    location: "KABUPATEN BANTUL",
-    distance: "± 1.2KM",
-    facilities: ["Garasi", "AC", "Dapur", "TV", "WiFi"],
-  },
-  {
-    id: 5,
-    image: homestay1,
-    title: "Homestay Kotagede",
-    description: "Homestay klasik dengan nuansa Jawa yang kental. Cocok untuk Anda yang ingin merasakan suasana tradisional Yogyakarta dengan tetap mendapatkan fasilitas modern...",
-    price: 600000,
-    rating: 9.28,
-    capacity: 10,
-    rooms: 3,
-    location: "KOTA YOGYAKARTA",
-    distance: "± 1.5KM",
-    facilities: ["Parkir", "AC", "Dapur", "WiFi"],
-  },
-  {
-    id: 6,
-    image: homestay2,
-    title: "Homestay Mergangsan",
-    description: "Homestay nyaman dengan lokasi strategis dekat pusat kota. Akses mudah ke berbagai destinasi wisata dan kuliner Yogyakarta...",
-    price: 550000,
-    rating: 9.21,
-    capacity: 8,
-    rooms: 2,
-    location: "KOTA YOGYAKARTA",
-    distance: "± 1.8KM",
-    facilities: ["Parkir", "AC", "Dapur", "TV"],
-  },
-];
-
 const toSlug = (text: string) =>
   text.toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-");
 
 const CategoryPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const [homestays, setHomestays] = useState<Homestay[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Find category info
-  const category = exploreCategories.find((cat) => cat.slug === slug);
+  const category = homestayCategories.find((cat) => cat.slug === slug);
   const categoryTitle = category?.title || slug?.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ") || "Homestay";
-  const categoryDesc = category?.description || "Temukan berbagai pilihan homestay terbaik di lokasi ini. Setiap homestay memiliki fasilitas yang berbeda, silahkan sesuaikan dengan kebutuhan Anda.";
+  const categoryDesc = category?.subtitle || "Temukan berbagai pilihan homestay terbaik di kategori ini. Setiap homestay memiliki fasilitas yang berbeda, silahkan sesuaikan dengan kebutuhan Anda.";
+
+  useEffect(() => {
+    const fetchCategoryHomestays = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/homestays');
+        if (!response.ok) {
+          throw new Error('Failed to fetch homestays');
+        }
+        const allHomestays = await response.json();
+
+        // Filter homestays by category if category is found
+        let filteredHomestays = allHomestays;
+        if (category) {
+          filteredHomestays = allHomestays.filter((homestay: any) =>
+            homestay.categories && homestay.categories.includes(category.key)
+          );
+        }
+
+        setHomestays(filteredHomestays);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load homestays');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategoryHomestays();
+  }, [slug, category]);
 
   const formatPrice = (price: number) =>
     new Intl.NumberFormat("id-ID").format(price);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#f0f4f8] flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Memuat homestay...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#f0f4f8] flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">Gagal memuat data homestay</p>
+          <p className="text-gray-600">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#f0f4f8]">
@@ -135,7 +101,7 @@ const CategoryPage = () => {
             <span className="text-gray-400">›</span>
             <Link to="/explore" className="text-gray-600 hover:text-blue-600">Explore</Link>
             <span className="text-gray-400">›</span>
-            <span className="text-blue-600 font-medium">{categoryHomestays.length} {categoryTitle}</span>
+            <span className="text-blue-600 font-medium">{homestays.length} {categoryTitle}</span>
           </nav>
         </div>
       </div>
@@ -145,7 +111,7 @@ const CategoryPage = () => {
         <div className="container">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-2xl md:text-3xl font-bold text-blue-600 mb-2">
-              {categoryHomestays.length} {categoryTitle}
+              {homestays.length} {categoryTitle}
             </h1>
             <div className="w-16 h-1 bg-yellow-400 mx-auto rounded mb-4"></div>
             <p className="text-gray-600 text-sm leading-relaxed">
@@ -179,7 +145,7 @@ const CategoryPage = () => {
       {/* Homestay Cards */}
       <div className="container py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categoryHomestays.map((homestay) => (
+          {homestays.map((homestay) => (
             <div 
               key={homestay.id}
               className="bg-white rounded-lg shadow-sm overflow-hidden cursor-pointer group hover:shadow-lg transition-shadow"
@@ -188,9 +154,16 @@ const CategoryPage = () => {
               {/* Image */}
               <div className="relative h-48 overflow-hidden">
                 <img
-                  src={homestay.image}
+                  src={
+                    homestay.image
+                      ? `http://localhost:5000/uploads/${homestay.image}`
+                      : "/images/placeholder.jpg"
+                  }
                   alt={homestay.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  onError={(e) => {
+                    e.currentTarget.src = "/images/placeholder.jpg";
+                  }}
                 />
                 
                 {/* Badges */}
@@ -214,7 +187,7 @@ const CategoryPage = () => {
                   </span>
                   <span className="bg-white/90 text-gray-900 text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1">
                     <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                    {homestay.rating.toFixed(2)}
+                    {Number(homestay.rating || 0).toFixed(1)}
                   </span>
                 </div>
               </div>
@@ -273,4 +246,4 @@ const CategoryPage = () => {
   );
 };
 
-export default CategoryPage;
+export default CategoryPage;  
