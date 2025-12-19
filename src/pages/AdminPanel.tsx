@@ -56,7 +56,8 @@ const AdminPanel = () => {
     distance: '',
     facilities: [] as string[],
     categories: [] as string[],
-    image: null as File | null
+    image: null as File | null,
+    existingImage: '' as string
   });
 
   const facilityOptions = [
@@ -115,7 +116,8 @@ const AdminPanel = () => {
       distance: '',
       facilities: [],
       categories: [],
-      image: null
+      image: null,
+      existingImage: ''
     });
     setEditingHomestay(null);
   };
@@ -194,7 +196,8 @@ const AdminPanel = () => {
       distance: homestay.distance,
       facilities: homestay.facilities,
       categories: homestay.categories,
-      image: null
+      image: null,
+      existingImage: homestay.image
     });
     setIsAddDialogOpen(true);
   };
@@ -432,6 +435,16 @@ const AdminPanel = () => {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="image">Gambar</Label>
+                        {editingHomestay && form.existingImage && !form.image && (
+                          <div className="mb-2">
+                            <img 
+                              src={`http://localhost:5000${form.existingImage}`} 
+                              alt="Current" 
+                              className="w-20 h-20 rounded-lg object-cover border"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">Foto saat ini</p>
+                          </div>
+                        )}
                         <Input
                           id="image"
                           type="file"
