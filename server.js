@@ -120,10 +120,10 @@ app.get('/api/homestays/:id', (req, res) => {
 
 // Tambah homestay baru
 app.post('/api/homestays', upload.single('image'), (req, res) => {
-  const { title, description, price, capacity, rooms, location, distance, facilities, categories } = req.body;
+  const { title, description, price, rating, capacity, rooms, location, distance, facilities, categories } = req.body;
   const image = req.file ? `/uploads/${req.file.filename}` : null;
 
-  if (!title || !description || !price || !capacity || !rooms || !location || !distance || !facilities || !image) {
+  if (!title || !description || !price || !rating || !capacity || !rooms || !location || !distance || !facilities || !image) {
     return res.status(400).json({ error: 'Semua data wajib diisi' });
   }
 
@@ -133,8 +133,8 @@ app.post('/api/homestays', upload.single('image'), (req, res) => {
 
     // Insert homestay first
     db.query(
-      'INSERT INTO homestays (image, title, description, price, capacity, rooms, location, distance, facilities) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [image, title, description, price, capacity, rooms, location, distance, JSON.stringify(facilitiesArray)],
+      'INSERT INTO homestays (image, title, description, price, rating, capacity, rooms, location, distance, facilities) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [image, title, description, price, rating, capacity, rooms, location, distance, JSON.stringify(facilitiesArray)],
       (err, result) => {
         if (err) return res.status(500).json({ error: err.message });
 
@@ -167,17 +167,17 @@ app.post('/api/homestays', upload.single('image'), (req, res) => {
       }
     );
   } catch (error) {
-    res.status(400).json({ error: 'Format facilities tidak valid' });
+    res.status(400).json({ error: 'Format data tidak valid' });
   }
 });
 
 // Update homestay
 app.put('/api/homestays/:id', upload.single('image'), (req, res) => {
   const { id } = req.params;
-  const { title, description, price, capacity, rooms, location, distance, facilities, categories } = req.body;
+  const { title, description, price, rating, capacity, rooms, location, distance, facilities, categories } = req.body;
   const image = req.file ? `/uploads/${req.file.filename}` : null;
 
-  if (!title || !description || !price || !capacity || !rooms || !location || !distance || !facilities) {
+  if (!title || !description || !price || !rating || !capacity || !rooms || !location || !distance || !facilities) {
     return res.status(400).json({ error: 'Semua data wajib diisi' });
   }
 
@@ -187,11 +187,20 @@ app.put('/api/homestays/:id', upload.single('image'), (req, res) => {
 
     // Update homestay first
     const updateData = {
-      title, description, price, capacity, rooms, location, distance,
+      title, 
+      description, 
+      price, 
+      rating, 
+      capacity, 
+      rooms, 
+      location, 
+      distance,
       facilities: JSON.stringify(facilitiesArray)
     };
 
-    if (image) updateData.image = image;
+    if (image) {
+      updateData.image = image;
+    }
 
     db.query('UPDATE homestays SET ? WHERE id = ?', [updateData, id], (err, result) => {
       if (err) return res.status(500).json({ error: err.message });
@@ -228,7 +237,7 @@ app.put('/api/homestays/:id', upload.single('image'), (req, res) => {
       });
     });
   } catch (error) {
-    res.status(400).json({ error: 'Format facilities tidak valid' });
+    res.status(400).json({ error: 'Format data tidak valid' });
   }
 });
 
