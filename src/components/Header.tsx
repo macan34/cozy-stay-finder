@@ -53,10 +53,10 @@ const Header = () => {
 
             {/* Right Section - Desktop Auth Buttons */}
             <div className="hidden lg:flex items-center gap-3">
-              <button className="flex items-center gap-2 px-5 py-2.5 text-white hover:bg-white/10 rounded-lg transition-colors">
+            <Link to="/login" className="flex items-center gap-2 px-5 py-2.5 text-white hover:bg-white/10 rounded-lg transition-colors">
                 <LogIn className="w-4 h-4" />
                 <span className="font-medium">Masuk</span>
-              </button>
+              </Link>
               <button className="px-6 py-2.5 bg-cyan-400 hover:bg-cyan-500 text-blue-900 font-semibold rounded-lg transition-colors shadow-md">
                 Jadi Host! +
               </button>
@@ -245,10 +245,10 @@ const Header = () => {
             
             {/* Mobile Action Buttons */}
             <div className="space-y-2">
-              <button className="w-full flex items-center justify-center gap-2 px-4 py-3 text-white bg-white/10 hover:bg-white/20 rounded-lg transition-colors">
+              <Link to="/login" className="w-full flex items-center justify-center gap-2 px-4 py-3 text-white bg-white/10 hover:bg-white/20 rounded-lg transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                 <LogIn className="w-5 h-5" />
                 <span className="font-medium">Masuk</span>
-              </button>
+              </Link>
               <button className="w-full px-4 py-3 bg-cyan-400 hover:bg-cyan-500 text-blue-900 font-semibold rounded-lg transition-colors shadow-md">
                 Jadi Host! +
               </button>

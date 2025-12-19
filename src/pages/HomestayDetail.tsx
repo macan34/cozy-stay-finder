@@ -22,18 +22,16 @@ import {
   Tag,
   ChevronDown,
   ExternalLink,
+  Loader2,
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toSlug } from "@/lib/utils";
 
-// Import images
-import homestay1 from "@/assets/homestay-1.jpg";
-import homestay2 from "@/assets/homestay-2.jpg";
-import homestay3 from "@/assets/homestay-3.jpg";
-import homestay4 from "@/assets/homestay-4.jpg";
+
 
 /* ================= INTERFACES ================= */
 interface HomestayDetailData {
@@ -55,83 +53,8 @@ interface HomestayDetailData {
   coordinates?: { lat: number; lng: number };
 }
 
-/* ================= SAMPLE DATA ================= */
-const homestayDetails: HomestayDetailData[] = [
-  {
-    id: 1,
-    slug: "homestay-gembira-loka-2",
-    title: "Homestay Gembira Loka 2",
-    description: "Homestay ini berlokasi strategis di tengah Kota Yogyakarta, letaknya tidak jauh dari wisata Gembira Loka Zoo dan UAD Kampus 3.",
-    longDescription: "Homestay murah di Jogja ini menawarkan berbagai macam fasilitas yang akan menjamin kenyamanan Anda selama menginap. Dengan lokasi yang strategis di tengah kota, Anda dapat dengan mudah mengakses berbagai tempat wisata dan kuliner terkenal di Yogyakarta. Homestay ini cocok untuk keluarga atau rombongan yang ingin berlibur dengan budget terjangkau namun tetap nyaman.\n\nHomestay ini dilengkapi dengan 3 kamar tidur yang nyaman, 2 kamar mandi bersih, dapur lengkap, ruang tamu yang luas, dan area parkir yang aman. Fasilitas lainnya termasuk AC, WiFi gratis, TV, kulkas, dan perlengkapan masak lengkap.\n\nLokasi homestay sangat strategis, dekat dengan Gembira Loka Zoo (±500m), UAD Kampus 3, berbagai warung makan dan minimarket. Akses ke Malioboro hanya 15 menit berkendara.",
-    price: 575000,
-    rating: 9.43,
-    capacity: { min: 6, max: 8 },
-    bedrooms: 3,
-    bathrooms: 2,
-    location: "KABUPATEN BANTUL",
-    address: "Jl. Ireda No.43, Kota Yogyakarta, DIY",
-    images: [homestay1, homestay2, homestay3, homestay4, homestay1, homestay2],
-    facilities: ["WiFi Gratis", "AC", "Parkir", "Dapur", "TV", "Kulkas", "Setrika", "Kipas Angin", "Water Heater", "Perlengkapan Masak"],
-    rules: ["Check-in: 14:00", "Check-out: 12:00", "Tidak boleh membawa hewan peliharaan", "Dilarang mengadakan pesta/acara", "Dilarang merokok di dalam ruangan"],
-    coordinates: { lat: -7.8012, lng: 110.3956 },
-  },
-  {
-    id: 2,
-    slug: "homestay-jec-kuning",
-    title: "Homestay JEC Kuning",
-    description: "Homestay di Jogja dengan kolam renang plus desain interior estetik. WHouse JEC Kuning adalah homestay yang tepat untuk staycation.",
-    longDescription: "WHouse JEC Kuning adalah homestay premium di Jogja dengan kolam renang pribadi dan desain interior estetik yang instagramable. Homestay ini sangat cocok untuk Anda yang mengagendakan staycation di Jogja bersama keluarga atau teman-teman.\n\nHomestay ini memiliki 4 kamar tidur yang luas dengan AC, 3 kamar mandi bersih, kolam renang pribadi, dapur lengkap, dan ruang keluarga yang nyaman. Setiap sudut homestay dirancang dengan estetik modern yang cocok untuk spot foto.\n\nLokasi homestay dekat dengan JEC (±600m), akses mudah ke berbagai tempat wisata dan kuliner Yogyakarta.",
-    price: 850000,
-    rating: 9.53,
-    capacity: { min: 15, max: 18 },
-    bedrooms: 4,
-    bathrooms: 3,
-    location: "KOTA YOGYAKARTA",
-    address: "Jl. Ring Road Timur, Kota Yogyakarta, DIY",
-    images: [homestay2, homestay3, homestay4, homestay1, homestay2, homestay3],
-    facilities: ["Kolam Renang", "WiFi Gratis", "AC", "Parkir", "Dapur", "TV", "Kulkas", "Setrika", "Water Heater", "BBQ Area"],
-    rules: ["Check-in: 14:00", "Check-out: 12:00", "Tidak boleh membawa hewan peliharaan", "Dilarang mengadakan pesta/acara besar", "Anak-anak harus diawasi saat berenang"],
-    coordinates: { lat: -7.7826, lng: 110.4168 },
-  },
-  {
-    id: 3,
-    slug: "homestay-gembira-loka",
-    title: "Homestay Gembira Loka",
-    description: "Homestay ini cocok untuk rombongan karena memiliki ruangan yang cukup luas dengan suasana asri dan lingkungan tenang.",
-    longDescription: "Homestay Gembira Loka adalah pilihan tepat untuk Anda yang mencari akomodasi dengan suasana asri dan lingkungan yang tenang. Cocok untuk rombongan keluarga atau gathering bersama teman-teman.\n\nHomestay ini memiliki 4 kamar tidur dengan kapasitas hingga 16 orang, 2 kamar mandi, dapur lengkap, ruang keluarga luas, dan taman yang asri. Suasana tenang dan jauh dari keramaian membuat homestay ini cocok untuk relaksasi.\n\nLokasi dekat dengan Gembira Loka Zoo dan berbagai tempat wisata di Yogyakarta.",
-    price: 720000,
-    rating: 9.47,
-    capacity: { min: 12, max: 16 },
-    bedrooms: 4,
-    bathrooms: 2,
-    location: "KOTA YOGYAKARTA",
-    address: "Jl. Gembira Loka, Kota Yogyakarta, DIY",
-    images: [homestay3, homestay4, homestay1, homestay2, homestay3, homestay4],
-    facilities: ["WiFi Gratis", "AC", "Parkir Luas", "Dapur", "TV", "Kipas Angin", "Setrika", "Taman", "Ruang Keluarga Luas"],
-    rules: ["Check-in: 14:00", "Check-out: 12:00", "Tidak boleh membawa hewan peliharaan", "Jaga kebersihan lingkungan"],
-    coordinates: { lat: -7.7982, lng: 110.3921 },
-  },
-];
-
-// Default homestay for any slug not found
-const defaultHomestay: HomestayDetailData = {
-  id: 0,
-  slug: "default",
-  title: "Homestay Ambarukmo 2",
-  description: "Homestay murah di Jogja dengan fasilitas lengkap dan lokasi strategis.",
-  longDescription: "Homestay murah di Jogja ini menawarkan berbagai macam fasilitas yang akan menjamin kenyamanan Anda selama menginap. Dengan lokasi yang strategis, Anda dapat dengan mudah mengakses berbagai tempat wisata dan kuliner terkenal di Yogyakarta.\n\nHomestay ini dilengkapi dengan 3 kamar tidur yang nyaman, 2 kamar mandi bersih, dapur lengkap, ruang tamu yang luas, dan area parkir yang aman. Fasilitas lainnya termasuk AC, WiFi gratis, TV, kulkas, dan perlengkapan masak lengkap.\n\nLokasi homestay sangat strategis, dekat dengan berbagai destinasi wisata Yogyakarta. Akses ke Malioboro hanya 15 menit berkendara.",
-  price: 575000,
-  rating: 9.43,
-  capacity: { min: 6, max: 8 },
-  bedrooms: 3,
-  bathrooms: 2,
-  location: "KOTA YOGYAKARTA",
-  address: "Jl. Ireda No.43, Kota Yogyakarta, DIY",
-  images: [homestay1, homestay2, homestay3, homestay4, homestay1, homestay2],
-  facilities: ["WiFi Gratis", "AC", "Parkir", "Dapur", "TV", "Kulkas", "Setrika", "Kipas Angin", "Water Heater", "Perlengkapan Masak"],
-  rules: ["Check-in: 14:00", "Check-out: 12:00", "Tidak boleh membawa hewan peliharaan", "Dilarang mengadakan pesta/acara", "Dilarang merokok di dalam ruangan"],
-  coordinates: { lat: -7.7956, lng: 110.3695 },
-};
+// Default coordinates for fallback
+const defaultCoordinates = { lat: -7.7956, lng: 110.3695 };
 
 const WHATSAPP_NUMBER = "6285713577240";
 
@@ -139,6 +62,9 @@ const HomestayDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   
+  const [homestay, setHomestay] = useState<HomestayDetailData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [checkInDate, setCheckInDate] = useState("");
   const [checkOutDate, setCheckOutDate] = useState("");
@@ -152,8 +78,52 @@ const HomestayDetail = () => {
   const tentangRef = useRef<HTMLDivElement>(null);
   const mapsRef = useRef<HTMLDivElement>(null);
 
-  // Find homestay by slug or use default
-  const homestay = homestayDetails.find((h) => h.slug === slug) || { ...defaultHomestay, title: slug?.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ") || defaultHomestay.title };
+  // Fetch homestay data from API
+  useEffect(() => {
+    const fetchHomestay = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/homestays');
+        if (!response.ok) {
+          throw new Error('Failed to fetch homestays');
+        }
+        const allHomestays = await response.json();
+
+        // Find homestay by slug
+        const foundHomestay = allHomestays.find((h: any) => toSlug(h.title) === slug);
+
+        if (foundHomestay) {
+          // Transform API data to component interface
+          const transformedHomestay: HomestayDetailData = {
+            id: foundHomestay.id,
+            slug: toSlug(foundHomestay.title),
+            title: foundHomestay.title,
+            description: foundHomestay.description,
+            longDescription: foundHomestay.description + '\n\nHomestay ini dilengkapi dengan berbagai fasilitas untuk kenyamanan Anda selama menginap.',
+            price: foundHomestay.price,
+            rating: foundHomestay.rating || 9.0,
+            capacity: { min: Math.max(1, foundHomestay.capacity - 2), max: foundHomestay.capacity },
+            bedrooms: foundHomestay.rooms,
+            bathrooms: Math.ceil(foundHomestay.rooms / 2),
+            location: foundHomestay.location,
+            address: foundHomestay.location + ', Yogyakarta',
+            images: [foundHomestay.image, foundHomestay.image, foundHomestay.image], // Use same image for now
+            facilities: foundHomestay.facilities || [],
+            rules: ["Check-in: 14:00", "Check-out: 12:00", "Tidak boleh membawa hewan peliharaan", "Dilarang mengadakan pesta/acara", "Dilarang merokok di dalam ruangan"],
+            coordinates: { lat: -7.7956, lng: 110.3695 }, // Default coordinates
+          };
+          setHomestay(transformedHomestay);
+        } else {
+          setError('Homestay tidak ditemukan');
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load homestay');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHomestay();
+  }, [slug]);
 
   const scrollToSection = (sectionId: string) => {
     const refs: { [key: string]: React.RefObject<HTMLDivElement> } = {
@@ -205,8 +175,8 @@ const HomestayDetail = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const formatPrice = (price: number) =>
-    new Intl.NumberFormat("id-ID").format(price);
+const formatPrice = (price: number) =>
+  new Intl.NumberFormat("id-ID").format(price || 0);
 
   const calculateNights = () => {
     if (!checkInDate || !checkOutDate) return 0;
@@ -217,35 +187,38 @@ const HomestayDetail = () => {
   };
 
   const nights = calculateNights();
-  const totalPrice = nights * homestay.price;
+  const totalPrice = nights * (homestay?.price || 0); // Perbaikan di sini
 
-  const handleWhatsAppOrder = () => {
-    const homestayName = encodeURIComponent(homestay.title);
-    const checkIn = encodeURIComponent(checkInDate || "Belum dipilih");
-    const checkOut = encodeURIComponent(checkOutDate || "Belum dipilih");
-    const guests = encodeURIComponent(guestCount.toString());
-    const total = encodeURIComponent(formatPrice(totalPrice));
-    
-    const message = encodeURIComponent(
-      `Halo, saya ingin memesan:\n\n` +
-      `🏠 Homestay: ${homestay.title}\n` +
-      `📅 Check-in: ${checkInDate || "Belum dipilih"}\n` +
-      `📅 Check-out: ${checkOutDate || "Belum dipilih"}\n` +
-      `👥 Jumlah Tamu: ${guestCount} orang\n` +
-      `💰 Total: Rp ${formatPrice(totalPrice)}\n\n` +
-      `Mohon konfirmasi ketersediaannya. Terima kasih!`
-    );
-    
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, "_blank");
-  };
+const handleWhatsAppOrder = () => {
+  if (!homestay) return; // Tambahkan pengecekan
+  
+  const homestayName = encodeURIComponent(homestay.title);
+  const checkIn = encodeURIComponent(checkInDate || "Belum dipilih");
+  const checkOut = encodeURIComponent(checkOutDate || "Belum dipilih");
+  const guests = encodeURIComponent(guestCount.toString());
+  const total = encodeURIComponent(formatPrice(totalPrice));
+  
+  const message = encodeURIComponent(
+    `Halo, saya ingin memesan:\n\n` +
+    `🏠 Homestay: ${homestay.title}\n` +
+    `📅 Check-in: ${checkInDate || "Belum dipilih"}\n` +
+    `📅 Check-out: ${checkOutDate || "Belum dipilih"}\n` +
+    `👥 Jumlah Tamu: ${guestCount} orang\n` +
+    `💰 Total: Rp ${formatPrice(totalPrice)}\n\n` +
+    `Mohon konfirmasi ketersediaannya. Terima kasih!`
+  );
+  
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, "_blank");
+};
+const nextImage = () => {
+  if (!homestay) return; // Tambahkan pengecekan
+  setCurrentImageIndex((prev) => (prev + 1) % homestay.images.length);
+};
 
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % homestay.images.length);
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + homestay.images.length) % homestay.images.length);
-  };
+const prevImage = () => {
+  if (!homestay) return; // Tambahkan pengecekan
+  setCurrentImageIndex((prev) => (prev - 1 + homestay.images.length) % homestay.images.length);
+};
 
   const facilityIcons: { [key: string]: any } = {
     "WiFi Gratis": Wifi,
@@ -259,7 +232,29 @@ const HomestayDetail = () => {
     "Kolam Renang": Bath,
   };
 
-  const coords = homestay.coordinates || defaultHomestay.coordinates!;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#f0f4f8] flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Memuat detail homestay...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !homestay) {
+    return (
+      <div className="min-h-screen bg-[#f0f4f8] flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">Gagal memuat detail homestay</p>
+          <p className="text-gray-600">{error || 'Homestay tidak ditemukan'}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const coords = homestay.coordinates || defaultCoordinates;
 
   return (
     <div className="min-h-screen bg-[#f0f4f8]">

@@ -32,12 +32,9 @@ const HomestayCard = ({
     return new Intl.NumberFormat('id-ID').format(price);
   };
 
-  const handleClick = () => {
-    window.location.href = `homestaydetail.php?id=${id}`;
-  };
-
+  
   return (
-    <article className="homestay-card group cursor-pointer" onClick={handleClick}>
+    <article className="homestay-card group cursor-pointer">
       {/* Image Container */}
       <div className="relative aspect-[4/3] overflow-hidden">
         <img
@@ -63,10 +60,10 @@ const HomestayCard = ({
               {capacity} org
             </span>
           )}
-          {rating && (
+          {Number.isFinite(Number(rating)) && (
             <span className="bg-card/90 text-foreground text-xs font-medium px-2 py-1 rounded flex items-center gap-1">
               <Star className="w-3 h-3 fill-accent text-accent" />
-              {rating.toFixed(2)}
+              {Number(Number(rating)).toFixed(2)}
             </span>
           )}
         </div>

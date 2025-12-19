@@ -4,14 +4,16 @@ import Footer from "@/components/Footer";
 import { homestayCategories, HomestayCategory } from "@/components/HomestaySection";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Calendar, Users, MapPin, Eye, ChevronDown } from "lucide-react";
+import { Search, Calendar, Users, MapPin, Eye, ChevronDown, Loader2 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
+import { useEffect } from "react";
 
 // Import images
 import homestay1 from "@/assets/homestay-1.jpg";
 import homestay2 from "@/assets/homestay-2.jpg";
 import homestay3 from "@/assets/homestay-3.jpg";
 import homestay4 from "@/assets/homestay-4.jpg";
+import ImageGallery from "@/components/ImageGallery";
 
 /* ================= UTIL ================= */
 export const toSlug = (text: string) =>
@@ -22,6 +24,7 @@ export interface ExploreCategory {
   id: number;
   slug: string;
   image: string;
+  images?: string[];
   title: string;
   description: string;
   views: number;
@@ -135,11 +138,83 @@ const trendingHomestays = [
 const Explore = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const [exploreCategories, setExploreCategories] = useState<ExploreCategory[]>([]);
+  const [trendingHomestays, setTrendingHomestays] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchExploreData = async () => {
+      try {
+        // Fetch homestays from API
+        const homestaysResponse = await fetch('http://localhost:5000/api/homestays');
+        const homestays = await homestaysResponse.json();
+
+        // Convert homestays to explore categories format
+        const categories: ExploreCategory[] = homestayCategories.map((cat, index) => ({
+          id: index + 1,
+          slug: cat.slug,
+          image: homestays[index % homestays.length]?.image || '/uploads/default.jpg',
+          images: [homestays[index % homestays.length]?.image || '/uploads/default.jpg'], // Add images array
+          title: cat.title,
+          description: cat.subtitle + '. ' + cat.title + ' dengan berbagai pilihan homestay terbaik di Jogja.',
+          views: Math.floor(Math.random() * 10000) + 1000, // Random views for demo
+          date: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toLocaleDateString('id-ID', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+          })
+        }));
+
+        // Create trending homestays from top homestays
+        const trending = homestays.slice(0, 3).map((homestay: any, index: number) => ({
+          id: homestay.id,
+          image: homestay.image,
+          images: [homestay.image], // Add images array
+          title: homestay.title,
+          description: homestay.description,
+          views: Math.floor(Math.random() * 100000) + 10000,
+          slug: toSlug(homestay.title)
+        }));
+
+        setExploreCategories(categories);
+        setTrendingHomestays(trending);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExploreData();
+  }, []);
 
   const filteredCategories = exploreCategories.filter((cat) =>
     cat.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     cat.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#f0f4f8] flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Memuat data explore...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#f0f4f8] flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">Gagal memuat data explore</p>
+          <p className="text-gray-600">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#f0f4f8]">
@@ -205,10 +280,12 @@ const Explore = () => {
                 >
                   {/* Image */}
                   <div className="relative h-48 overflow-hidden">
-                    <img
-                      src={category.image}
-                      alt={category.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    <ImageGallery
+                      images={category.images || [category.image]}
+                      title={category.title}
+                      showThumbnails={false}
+                      aspectRatio="aspect-[4/3]"
+                      className="group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
 
@@ -278,13 +355,15 @@ const Explore = () => {
                   >
                     <div className="flex gap-3">
                       <div className="w-24 h-20 rounded-lg overflow-hidden flex-shrink-0 relative">
-                        <img 
-                          src={item.image} 
-                          alt={item.title}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        <ImageGallery
+                          images={item.images || [item.image]}
+                          title={item.title}
+                          showThumbnails={false}
+                          aspectRatio="aspect-[6/5]"
+                          className="group-hover:scale-110 transition-transform duration-300"
                         />
-                        <Button 
-                          size="sm" 
+                        <Button
+                          size="sm"
                           className="absolute bottom-1 left-1 right-1 text-xs py-1 h-auto bg-blue-600 hover:bg-blue-700"
                         >
                           Lihat
